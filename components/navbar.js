@@ -1,3 +1,5 @@
+import { renderHeroSection } from './hero.js';
+
 export function renderNavbar() {
   const navbar = document.createElement('nav');
   navbar.style.cssText = `
@@ -19,14 +21,23 @@ export function renderNavbar() {
     z-index: 10;
   `;
 
-  const leftIcon = document.createElement('div');
-  leftIcon.innerHTML = '🧠';
-  leftIcon.title = 'New Chat';
-  leftIcon.style.cssText = `font-size: 1.5rem; cursor: pointer;`;
-  leftIcon.onclick = () => alert("🧠 New chat clicked");
+  // === LEFT ICON ===
+  const leftIcon = document.createElement('img');
+  leftIcon.src = '../assets/icon-newChat.png';
+  leftIcon.alt = 'Icon';
+  leftIcon.style.cssText = `
+    height: 25px;
+    width: 25px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  `;
+  leftIcon.onmouseenter = () => leftIcon.style.transform = 'scale(1.2)';
+  leftIcon.onmouseleave = () => leftIcon.style.transform = 'scale(1)';
 
+  // === CENTER LOGO ===
   const title = document.createElement('img');
-title.src = '../assets/logo.png'; // Ganti dengan path ke gambar kamu
+title.src = '../assets/logo.png';
 title.alt = 'HelloBean Logo';
 title.style.cssText = `
   height: 60px;
@@ -37,31 +48,54 @@ title.style.cssText = `
   display: block;
   margin: 0 auto;
   margin-top: 19px;
-  box-shadow: 0 0 0 10px #0D0D0D; /* ini stroke */
+  box-shadow: 0 0 0 10px #0D0D0D;
+  transition: transform 0.6s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 `;
 
+title.onmouseenter = () => {
+  title.style.boxShadow = '0 0 6px 4px #fff063, 0 0 0 10px #0D0D0D';
+};
+title.onmouseleave = () => {
+  title.style.boxShadow = '0 0 0 10px #0D0D0D';
+};
 
-  const hamburger = document.createElement('div');
-  hamburger.style.cssText = `
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
+title.onclick = () => {
+  // Tambah animasi rotasi dan membesar
+  title.style.transform = 'scale(1.3) rotate(360deg)';
+
+  // Setelah animasi selesai, redirect ke website
+  setTimeout(() => {
+    window.location.href = 'https://www.lilbean.fun';
+  }, 600); // waktu harus sesuai dengan duration animasi
+};
+
+
+  // === LOGIN BUTTON ===
+  const loginButton = document.createElement('button');
+  loginButton.textContent = 'Log In';
+  loginButton.style.cssText = `
+    padding: 0.5rem 1rem;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: bold;
     z-index: 101;
+    transition: all 0.2s ease;
   `;
+  loginButton.onmouseenter = () => {
+    loginButton.style.backgroundColor = '#333';
+    loginButton.style.transform = 'translateY(-2px)';
+  };
+  loginButton.onmouseleave = () => {
+    loginButton.style.backgroundColor = 'black';
+    loginButton.style.transform = 'translateY(0)';
+  };
+  loginButton.onclick = () => alert('🔐 You clicked Log In');
 
-  for (let i = 0; i < 2; i++) {
-    const bar = document.createElement('div');
-    bar.style.cssText = `
-      width: 25px;
-      height: 3px;
-      background-color: black;
-      border-radius: 2px;
-    `;
-    hamburger.appendChild(bar);
-  }
-
+  // === CENTER WRAPPER ===
   const centerWrapper = document.createElement('div');
   centerWrapper.style.cssText = `
     position: absolute;
@@ -72,64 +106,6 @@ title.style.cssText = `
 
   navbar.appendChild(leftIcon);
   navbar.appendChild(centerWrapper);
-  navbar.appendChild(hamburger);
+  navbar.appendChild(loginButton);
   document.body.appendChild(navbar);
-
-  // === OVERLAY ===
-  const overlay = document.createElement('div');
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 98;
-    display: none;
-  `;
-  document.body.appendChild(overlay);
-
-  // === SIDEBAR ===
-  const sidebar = document.createElement('div');
-  sidebar.style.cssText = `
-  position: fixed;
-  top: 0;
-  right: -70%;
-  width: 70%;
-  height: 100vh;
-  background: linear-gradient(to bottom, #F4B400 50%, #FFF063 100%);
-  box-shadow: -2px 0 10px rgba(0,0,0,0.5);
-  transition: right 0.3s ease;
-  z-index: 99;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
-`;
-
-  sidebar.innerHTML = `
-    <h3 style="color:black; margin-top:0;">📋 Menu</h3>
-    <button style="margin-top:1rem; padding:0.5rem;">My Wallet</button>
-    <button style="margin-top:0.5rem; padding:0.5rem;">Settings</button>
-    <button style="margin-top:0.5rem; padding:0.5rem;">Logout</button>
-  `;
-  document.body.appendChild(sidebar);
-
-  let open = false;
-
-  function openSidebar() {
-    open = true;
-    sidebar.style.right = '0';
-    overlay.style.display = 'block';
-  }
-
-  function closeSidebar() {
-    open = false;
-    sidebar.style.right = '-70%';
-    overlay.style.display = 'none';
-  }
-
-  hamburger.onclick = openSidebar;
-  overlay.onclick = closeSidebar;
 }

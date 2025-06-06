@@ -1,6 +1,17 @@
 // import translate from 'google-translate-api-x'; ❌ hapus dulu
 import { askGemini } from './askGemini.js';
 import { informationBean } from './infoDetail.js';
+import { getGeminiAnalysis } from './handleAnalysys.js';
+
+function boldifyLabels(text) {
+  const labels = ['Swing:', 'Intraday:', 'Entry', 'SL', 'TP'];
+  labels.forEach(label => {
+    const regex = new RegExp(`\\b(${label})`, 'gi');
+    text = text.replace(regex, '**$1**');
+  });
+  return text;
+}
+
 
 function detectLanguage(messageText) {
   if (/[一-龥]/.test(messageText)) return 'zh-CN';
@@ -48,7 +59,7 @@ export async function handleMSG1(messageText) {
 
   const mainCategories = [
     'ask about project', 'ask bot', 'proposal',
-    'others', 'greeting', 'compliment'
+    'others', 'greeting', 'compliment', 'analysis crypto'
   ];
 
   const category = await detectCategory(processedText, mainCategories);
@@ -71,13 +82,38 @@ export async function handleMSG1(messageText) {
   }
 
   try {
+    
     let responMessage = '';
+    if (category === 'analysis crypto') {
+  const prompt = `
+Your task is to extract the cryptocurrency name from the following text and return its USDT trading pair symbol, following these rules:
+
+1. If the token is one of: pepe, shib, x, xec, floki, bonk, lunc, rats, sats → prefix the symbol with "1000"
+2. If the token is: mog or bob → prefix the symbol with "1000000"
+3. For any other token, use the standard symbol (no prefix)
+4. Return the result in full uppercase and only in the format: [SYMBOL]USDT
+5. Do not include any explanation or extra text — just the symbol.
+
+Examples:
+- "analyze pepe" → 1000PEPEUSDT  
+- "show me bob" → 1000000BOBUSDT  
+- "eth analysis" → ETHUSDT
+
+Text: "${processedText}"
+
+Answer:
+  `.trim();
+
+  const symbol = await askGemini(prompt);
+responMessage = await getGeminiAnalysis(symbol)
+}
+
     if (prompt) 
     responMessage = await askGemini(prompt);
     
 
-    // ✂️ Tidak perlu translate balik
-    return responMessage || '...';
+    responMessage = boldifyLabels(responMessage);
+    return responMessage || '...';
   } catch (e) {
     console.error('❌ Error generating response:', e.message);
     return 'Sorry, I couldn’t process that.';

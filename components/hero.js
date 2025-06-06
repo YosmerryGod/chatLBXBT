@@ -22,14 +22,25 @@ export function renderHeroSection() {
   chatBox.id = 'chat-box';
   chatBox.style.cssText = `
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     color: white;
     font-size: 0.95rem;
     position: relative;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
   `;
+
+  // Chrome & Safari hide scrollbar via global CSS
+  const style = document.createElement('style');
+  style.textContent = `
+    #chat-box::-webkit-scrollbar {
+      display: none;
+    }
+  `;
+  document.head.appendChild(style);
 
   const placeholder = document.createElement('div');
   placeholder.className = 'placeholder';
@@ -128,7 +139,7 @@ export function renderHeroSection() {
 
     chatHistory.push({ role: 'bot', content: response });
     bubble.textContent = '';
-    typeResponse(bubble, response);
+    typeResponse(bubble, response, true); // Enable bold parsing
   };
 
   inputWrapper.appendChild(input);
@@ -166,7 +177,7 @@ function addMessage(sender, text, parseBold = false) {
   `;
 
   if (parseBold) {
-    const formatted = text.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+    const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     bubble.innerHTML = formatted;
   } else {
     bubble.textContent = text;
@@ -184,8 +195,6 @@ async function generateResponse() {
       .map(msg => `${msg.role === 'user' ? 'You' : 'Satochi'}: ${msg.content}`)
       .join('\n');
 
-    const prompt = `You're Satochi Clone AI 🧠 from HelloBean. Reply in a fun, meme-style tone based on the conversation below:\n\n${context}\n\nSatochi:`;
-
     const reply = await handleMSG1(context);
     return reply || "Maaf, aku tidak bisa menjawab.";
   } catch (err) {
@@ -194,11 +203,25 @@ async function generateResponse() {
   }
 }
 
-function typeResponse(element, text, delay = 10) {
+function typeResponse(element, text, parseBold = false, delay = 10) {
   let i = 0;
+  let targetText = text;
+
+  if (parseBold) {
+    targetText = targetText.replace(/\*\*(.*?)\*\*/g, (_, p1) => `<strong>${p1}</strong>`);
+    element.innerHTML = '';
+  } else {
+    element.textContent = '';
+  }
+
   const interval = setInterval(() => {
-    element.textContent += text.charAt(i);
+    if (parseBold) {
+      element.innerHTML = targetText.slice(0, i + 1);
+    } else {
+      element.textContent += text.charAt(i);
+    }
+
     i++;
-    if (i >= text.length) clearInterval(interval);
+    if (i >= targetText.length) clearInterval(interval);
   }, delay);
 }
