@@ -189,6 +189,7 @@ export function renderHeroMobile() {
     position: relative;
     padding: 1rem;
     background-color: #1F1F1F;
+    margin-bottom: 5%;
   `;
 
     input.id = 'chat-input';
