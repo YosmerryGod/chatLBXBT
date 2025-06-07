@@ -13,8 +13,8 @@ export function renderHeroMobile() {
 
     const hero = document.createElement('main');
     hero.style.cssText = `
-    margin-top: 20vw;
-    height: 150vw;
+    margin-top: 30vw;
+    height: calc(100vh - 20vw);
     display: flex;
     flex-direction: column;
     background-color: #1F1F1F;
@@ -189,7 +189,7 @@ export function renderHeroMobile() {
     position: relative;
     padding: 1rem;
     background-color: #1F1F1F;
-    margin-bottom: 0%;
+    margin-bottom: 15%;
   `;
 
     input.id = 'chat-input';
