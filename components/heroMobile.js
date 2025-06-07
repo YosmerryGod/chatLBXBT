@@ -9,7 +9,7 @@ export function renderHeroMobile() {
     document.body.style.overflow = 'hidden';
 
     const navbar = document.querySelector('nav');
-    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.3);
+    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.2);
 
     const hero = document.createElement('main');
     hero.style.cssText = `
@@ -189,7 +189,7 @@ export function renderHeroMobile() {
     position: relative;
     padding: 1rem;
     background-color: #1F1F1F;
-    margin-bottom: 25%;
+    margin-bottom: 5%;
   `;
 
     input.id = 'chat-input';
