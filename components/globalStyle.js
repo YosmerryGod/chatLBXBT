@@ -11,7 +11,7 @@ export function applyGlobalStyle() {
       width: 100%;
       height: 100%;
       overflow-x: hidden;
-      background-color: #0e0e0e;
+      background-color: #1F1F1F;
     }
 
     body {

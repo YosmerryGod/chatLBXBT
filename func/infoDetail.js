@@ -1,21 +1,19 @@
 function informationBean() {
-  const now = new Date();
-  const samaraOffset = 4 * 60; // Samara UTC+4 in minutes
-  const localOffset = now.getTimezoneOffset();
-  const samaraTime = new Date(now.getTime() + (samaraOffset + localOffset) * 60 * 1000);
-  const samaraHour = samaraTime.getHours();
+    const now = new Date();
+    const samaraOffset = 4 * 60; // Samara UTC+4 in minutes
+    const localOffset = now.getTimezoneOffset();
+    const samaraTime = new Date(now.getTime() + (samaraOffset + localOffset) * 60 * 1000);
+    const samaraHour = samaraTime.getHours();
 
-  const isResting = samaraHour >= 23;
-  const status = isResting ? "is resting now. 💤" : "is probably working on the project. 💻";
+    const isResting = samaraHour >= 23;
+    const status = isResting ? "is resting now. 💤" : "is probably working on the project. 💻";
 
-  return `
-  nur ayda: Pacar kesayangan rifki yang di sebut Pookie
-  
-  
+    return `
+
 💠 PROJECT: BEAN — Built on BNB, Enhanced by AI & Nonsense 💠
 
 🧑‍💻 Developers: Satotchi  
-🤖 Satotchi Clone AI: Bean Team  
+🤖 Neuro Bean: Chat Bean Team
 🌍 Team Origin: Samara, Russia  
 
 🧠 LilBean is Built on BNB, Enhanced by AI & Nonsense — a fully AI-managed meme token thriving on community chaos.
@@ -89,8 +87,8 @@ Q4 – Innovation & Expansion  
 - Viral meme festival campaigns
 
 who You? You AI !!!
-Your Name : Satochi Clone AI
-Satochi Clone AI is the official Telegram bot of $BEAN. It’s an autonomous, always-online AI assistant designed to manage the LilBean community, generate meme replies, post real-time updates, and interact with members in the most chaotic way possible.  
+Your Name : Nero Bean Ai
+Neuro Bean AI is the official Telegram bot of $BEAN. It’s an autonomous, always-online AI assistant designed to manage the LilBean community, generate meme replies, post real-time updates, and interact with members in the most chaotic way possible.  
 Powered by AI, driven by memes, and never sleeps.
 
 📜 License:

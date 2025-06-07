@@ -14,13 +14,13 @@ function boldifyLabels(text) {
 
 
 function detectLanguage(messageText) {
-  if (/[一-龥]/.test(messageText)) return 'zh-CN';
-  if (/[ぁ-んァ-ン]/.test(messageText)) return 'ja';
-  return 'en';
+  if (/[一-龥]/.test(messageText)) return 'zh-CN';
+  if (/[ぁ-んァ-ン]/.test(messageText)) return 'ja';
+  return 'en';
 }
 
 async function detectCategory(processedText, mainCategories) {
-  const prompt = `
+  const prompt = `
 You are a helpful AI. Analyze the question: "${processedText}".
 Identify the most accurate category from this list:
 ${mainCategories.join(', ')}.
@@ -34,58 +34,48 @@ ${mainCategories.join(', ')}.
 
 If no category matches, return exactly "others". No explanations, just return the category.
   `;
-  try {
-    const result = await askGemini(prompt);
-    return result.trim().toLowerCase();
-  } catch (error) {
-    console.error(`[CategoryDetect] Error:`, error.message);
-    return 'others';
-  }
+  try {
+    const result = await askGemini(prompt);
+    return result.trim().toLowerCase();
+  } catch (error) {
+    console.error(`[CategoryDetect] Error:`, error.message);
+    return 'others';
+  }
 }
 
 export async function handleMSG1(messageText) {
-  let processedText = messageText;
-  const detectedLanguage = detectLanguage(messageText);
+  let processedText = messageText;
+  const detectedLanguage = detectLanguage(messageText);
 
-  // ✂️ Hapus proses translate karena tidak didukung di browser
-  // if (detectedLanguage !== 'en') {
-  //   try {
-  //     const translation = await translate(messageText, { to: 'en' });
-  //     processedText = translation.text;
-  //   } catch (error) {
-  //     console.error('[Translation] Error:', error.message);
-  //   }
-  // }
+  const mainCategories = [
+    'ask about project', 'ask bot', 'proposal',
+    'others', 'greeting', 'compliment', 'analysis crypto'
+  ];
 
-  const mainCategories = [
-    'ask about project', 'ask bot', 'proposal',
-    'others', 'greeting', 'compliment', 'analysis crypto'
-  ];
+  const category = await detectCategory(processedText, mainCategories);
+  let prompt = '';
 
-  const category = await detectCategory(processedText, mainCategories);
-  let prompt = '';
+  switch (category) {
+    case 'ask about project':
+    case 'ask bot':
+      prompt = `Hey Gemini! 👋\nHere's some fun info about Bean project:\n${informationBean()}\nSomeone just asked: "${processedText}".\nPlease answer with clear and chill response (max 50 words). Thanks! 🌟`;
+      break;
+    case 'greeting':
+      prompt = `They greeted: "${processedText}". Reply with excited and cheerful greeting (max 20 words).`;
+      break;
+    case 'compliment':
+      prompt = `They complimented: "${processedText}". Reply with playful compliment back (max 20 words).`;
+      break;
+    case 'others':
+      prompt = `Give a fun, positive, and playful answer that explains this clearly to a general audience: ${processedText}. Keep it under 250 words. Do not repeat the question.`;
+      break;
+  }
 
-  switch (category) {
-    case 'ask about project':
-    case 'ask bot':
-      prompt = `Hey Gemini! 👋\nHere's some fun info about Bean project:\n${informationBean()}\nSomeone just asked: "${processedText}".\nPlease answer with clear and chill response (max 50 words). Thanks! 🌟`;
-      break;
-    case 'greeting':
-      prompt = `They greeted: "${processedText}". Reply with excited and cheerful greeting (max 20 words).`;
-      break;
-    case 'compliment':
-      prompt = `They complimented: "${processedText}". Reply with playful compliment back (max 20 words).`;
-      break;
-    case 'others':
-  prompt = `Give a fun, positive, and playful answer that explains this clearly to a general audience: ${processedText}. Keep it under 250 words. Do not repeat the question.`;
-      break;
-  }
+  try {
 
-  try {
-    
-    let responMessage = '';
+    let responMessage = '';
     if (category === 'analysis crypto') {
-  const prompt = `
+      const prompt = `
 Your task is to extract the cryptocurrency name from the following text and return its USDT trading pair symbol, following these rules:
 
 1. If the token is one of: pepe, shib, x, xec, floki, bonk, lunc, rats, sats → prefix the symbol with "1000"
@@ -104,18 +94,18 @@ Text: "${processedText}"
 Answer:
   `.trim();
 
-  const symbol = await askGemini(prompt);
-responMessage = await getGeminiAnalysis(symbol)
-}
+      const symbol = await askGemini(prompt);
+      responMessage = await getGeminiAnalysis(symbol)
+    }
 
-    if (prompt) 
-    responMessage = await askGemini(prompt);
-    
+    if (prompt)
+      responMessage = await askGemini(prompt);
 
-    responMessage = boldifyLabels(responMessage);
+
+    responMessage = boldifyLabels(responMessage);
     return responMessage || '...';
-  } catch (e) {
-    console.error('❌ Error generating response:', e.message);
-    return 'Sorry, I couldn’t process that.';
-  }
+  } catch (e) {
+    console.error('❌ Error generating response:', e.message);
+    return 'Sorry, I couldn’t process that.';
+  }
 }

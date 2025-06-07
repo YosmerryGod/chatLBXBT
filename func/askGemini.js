@@ -1,5 +1,6 @@
 export async function askGemini(prompt) {
   const GEMINI_API_KEYS = [
+    { key: 'AIzaSyDH5dAhlgANLpoN7lEeanpMspH5QoFloSw', model: '2.0-flash' },
     { key: 'AIzaSyDH5dAhlgANLpoN7lEeanpMspH5QoFloSw', model: '1.5-flash' }
   ];
 

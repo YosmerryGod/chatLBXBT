@@ -71,44 +71,51 @@ Support 3: ${levels.s3.toFixed(5)}
   `.trim();
 
  return `
-You are a professional crypto futures analyst AI. Based on the data below, provide:
+You are a professional crypto futures analyst AI. Based on the data below, provide a concise and clear analysis for the symbol: **${symbol}** 📊
 
-1. Overall Signal:
-   - Swing: BUY / SELL / HOLD
-   - Intraday: BUY / SELL / HOLD
+1. **Overall Signal**
+   - **Swing**: BUY / SELL / HOLD  
+   - **Intraday**: BUY / SELL / HOLD
 
-2. Key Levels:
-   - Pivot
-   - Resistance 1–3
-   - Support 1–3
+2. **Key Levels**
+   - **Pivot**:  
+   - **Resistance**: R1, R2, R3  
+   - **Support**: S1, S2, S3
 
-3. Entry Strategy:
-   - Swing Trade:
-     • Entry:
-     • SL:
-     • TP:
-   - Intraday Trade:
-     • Entry:
-     • SL:
-     • TP:
+3. **Entry Strategy**
+   - **Swing Trade**
+     • Entry:  
+     • Stop Loss (SL):  
+     • Take Profit (TP):  
+   
+   - **Intraday Trade**
+     • Entry:  
+     • Stop Loss (SL):  
+     • Take Profit (TP):  
 
-4. Use max 150 words. Add 2–3 relevant emojis. Be clean, use line breaks and bullet points. Format clearly for readability.
+4. **Constraints**
+   - Use clear bullet points  
+   - Add 2–3 relevant emojis  
+   - Ensure professional formatting
 
-Data:
-OHLCV (Last 5):
-${textOHLCV}
+---
 
-Order Book:
-${textOrderBook}
+**Data Provided**  
+• OHLCV (Last 5 candles):  
+${textOHLCV}  
 
-Funding Rate:
-${textFundingRate}
+• Order Book Snapshot:  
+${textOrderBook}  
 
-Pivot Levels:
-${textLevels}
+• Funding Rate Info:  
+${textFundingRate}  
 
-Your Analysis:
+• Pivot Levels:  
+${textLevels}  
+
+Now generate your analysis.
 `.trim();
+
 }
 
 // Fungsi utama: dapatkan analisis dari Gemini AI
@@ -116,9 +123,16 @@ export async function getGeminiAnalysis(symbol = 'BTCUSDT') {
   try {
     const prompt = await createPrompt(symbol);
     const analysis = await askGemini(prompt);
-    return analysis || '⚠️ No response generated.';
+
+    if (!analysis) return '⚠️ No response generated.';
+
+    // Ganti bintang satu (*) yang berdiri sendiri dengan baris baru
+    const formatted = analysis.replace(/(^|\s)\*(?!\*)(.*?)\*(?=\s|$)/g, '\n$3\n');
+
+    return formatted.trim();
   } catch (error) {
-    console.error('[getGeminiAnalysis] Error:', error.message);
-    return '❌ Failed to analyze market data.';
+    console.error('Error in getGeminiAnalysis:', error);
+    return '❌ NeiroBean Failed to generate analysis.';
   }
 }
+

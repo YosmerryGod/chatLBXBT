@@ -4,6 +4,10 @@ import { handleMSG1 } from '../func/handleExample.js';
 const chatHistory = [];
 
 export function renderHeroSection() {
+  document.body.style.margin = '0';
+  document.body.style.height = '100vh';
+  document.body.style.overflow = 'hidden';
+
   const navbar = document.querySelector('nav');
   const navbarHeight = navbar?.offsetHeight || 60;
 
@@ -13,31 +17,60 @@ export function renderHeroSection() {
     height: calc(100vh - ${navbarHeight}px);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 1rem;
+    background-color: #1F1F1F;
     box-sizing: border-box;
+    overflow: hidden;
   `;
 
   const chatBox = document.createElement('div');
   chatBox.id = 'chat-box';
   chatBox.style.cssText = `
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     color: white;
     font-size: 0.95rem;
-    position: relative;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    background-color: #1F1F1F;
+    padding: 1rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   `;
 
-  // Chrome & Safari hide scrollbar via global CSS
   const style = document.createElement('style');
   style.textContent = `
     #chat-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    #chat-box::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #chat-box::-webkit-scrollbar-thumb {
+      background-color: #5e5e5e;
+      border-radius: 3px;
+    }
+    #chat-box {
+      scrollbar-width: thin;
+      scrollbar-color: #5e5e5e transparent;
+    }
+    .template-box::-webkit-scrollbar {
       display: none;
+    }
+    .template-box {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .template-box.dragging {
+      cursor: grabbing;
+      user-select: none;
+    }
+    #chat-input::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+    #chat-input {
+      scrollbar-width: none;
     }
   `;
   document.head.appendChild(style);
@@ -64,14 +97,31 @@ export function renderHeroSection() {
     display: flex;
     flex-direction: row;
     overflow-x: auto;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem 0.25rem;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    height: 6rem;
+    padding: 1rem 0;
     scroll-snap-type: x mandatory;
+    background-color: #1F1F1F;
+    -webkit-overflow-scrolling: touch;
   `;
 
-  const templates = ['tokenomics', 'Roadmap', 'help me analysis BTC'];
-  const input = document.createElement('input');
+  const templateWrapper = document.createElement('div');
+  templateWrapper.style.cssText = `
+    padding: 0 1rem;
+    box-sizing: border-box;
+  `;
+  templateWrapper.appendChild(templateBox);
+
+  const templates = [
+    'Explain what the LilBean project is about',
+    'Who is ChatBean and what can it do?',
+    "Give me today's BTC market analysis",
+    'What is the roadmap for LilBean?',
+    'Tell me about the utility of LilBean'
+  ];
+
+  const input = document.createElement('textarea');
   const button = document.createElement('button');
 
   templates.forEach(templateText => {
@@ -79,13 +129,14 @@ export function renderHeroSection() {
     btn.textContent = templateText;
     btn.style.cssText = `
       flex: 0 0 auto;
-      padding: 0.5rem 1rem;
+      white-space: nowrap;
+      padding: 1rem 1.5rem;
       background-color: transparent;
       border: 1px solid #CD9800;
       border-radius: 8px;
       color: #CD9800;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 500;
       scroll-snap-align: start;
     `;
@@ -96,32 +147,77 @@ export function renderHeroSection() {
     templateBox.appendChild(btn);
   });
 
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  templateBox.addEventListener('mousedown', (e) => {
+    isDown = true;
+    templateBox.classList.add('dragging');
+    startX = e.pageX - templateBox.offsetLeft;
+    scrollLeft = templateBox.scrollLeft;
+  });
+
+  templateBox.addEventListener('mouseleave', () => {
+    isDown = false;
+    templateBox.classList.remove('dragging');
+  });
+
+  templateBox.addEventListener('mouseup', () => {
+    isDown = false;
+    templateBox.classList.remove('dragging');
+  });
+
+  templateBox.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - templateBox.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    templateBox.scrollLeft = scrollLeft - walk;
+  });
+
   const inputWrapper = document.createElement('div');
   inputWrapper.style.cssText = `
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    width: 100%;
+    position: relative;
+    padding: 1rem;
+    background-color: #1F1F1F;
   `;
 
-  input.type = 'text';
   input.id = 'chat-input';
-  input.placeholder = 'Type your message...';
+  input.placeholder = 'Ask anything...';
   input.style.cssText = `
-    flex: 1;
-    padding: 0.8rem;
+    width: 100%;
+    min-height: 3rem;
+    max-height: 200px;
+    padding: 0.8rem 3rem 2.5rem 1rem;
     font-size: 1rem;
     border-radius: 8px;
     border: none;
     outline: none;
+    resize: none;
+    line-height: 1.4;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background-color: #2B2B2B;
+    color: white;
   `;
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = input.scrollHeight + 'px';
+  });
 
   button.textContent = '➤';
   button.style.cssText = `
+    position: absolute;
+    bottom: 1.8rem;
+    right: 1.6rem;
     background-color: #F4B400;
     color: black;
     border: none;
-    padding: 0.8rem 1.2rem;
-    border-radius: 12px;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
   `;
@@ -131,21 +227,29 @@ export function renderHeroSection() {
     if (!text) return;
 
     input.value = '';
+    input.style.height = 'auto';
     addMessage('user', text);
     chatHistory.push({ role: 'user', content: text });
 
-    const bubble = addMessage('bot', '⏳ Satochi is thinking...');
+    const bubble = addMessage('bot', '⏳ NeuroBean is thinking...');
     const response = await generateResponse();
 
     chatHistory.push({ role: 'bot', content: response });
-    bubble.textContent = '';
-    typeResponse(bubble, response, true); // Enable bold parsing
+    typeResponse(bubble, response, true);
   };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      button.click();
+    }
+  });
 
   inputWrapper.appendChild(input);
   inputWrapper.appendChild(button);
+
   hero.appendChild(chatBox);
-  hero.appendChild(templateBox);
+  hero.appendChild(templateWrapper);
   hero.appendChild(inputWrapper);
   document.body.appendChild(hero);
 }
@@ -170,7 +274,7 @@ function addMessage(sender, text, parseBold = false) {
     max-width: 80%;
     padding: 0.7rem 1rem;
     border-radius: 12px;
-    background-color: ${sender === 'user' ? '#3b82f6' : '#4b5563'};
+    background-color: ${sender === 'user' ? '#2B2B2B' : 'transparent'};
     color: white;
     word-wrap: break-word;
     line-height: 1.4;
@@ -191,15 +295,16 @@ function addMessage(sender, text, parseBold = false) {
 
 async function generateResponse() {
   try {
-    const context = chatHistory
-      .map(msg => `${msg.role === 'user' ? 'You' : 'Satochi'}: ${msg.content}`)
+    const lastMessage = chatHistory.slice(-1);
+    const context = lastMessage
+      .map(msg => `${msg.role === 'user' ? 'You' : 'NeuroBean'}: ${msg.content}`)
       .join('\n');
 
     const reply = await handleMSG1(context);
-    return reply || "Maaf, aku tidak bisa menjawab.";
+    return reply || "Sorry NeuroBean Error";
   } catch (err) {
     console.error("Gemini error:", err);
-    return "⚠️ Gagal menghubungi AI.";
+    return "Error Call NeuroBean";
   }
 }
 

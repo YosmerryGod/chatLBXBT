@@ -1,10 +1,11 @@
 import { renderHeroSection } from './hero.js';
+import { renderLoginModal } from './login.js';
 
 export function renderNavbar() {
   const navbar = document.createElement('nav');
   navbar.style.cssText = `
     width: 100%;
-    height: 60px;
+    height: 50px;
     background-color: #F4B400;
     color: black;
     display: flex;
@@ -34,30 +35,37 @@ export function renderNavbar() {
   `;
   leftIcon.onmouseenter = () => leftIcon.style.transform = 'scale(1.2)';
   leftIcon.onmouseleave = () => leftIcon.style.transform = 'scale(1)';
+  leftIcon.onclick = () => {
+  const main = document.querySelector('main');
+  if (main) main.remove(); // hapus section sebelumnya
+  renderHeroSection();     // render ulang dari awal
+};
 
   // === CENTER LOGO ===
   const title = document.createElement('img');
 title.src = '../assets/logo.png';
 title.alt = 'HelloBean Logo';
 title.style.cssText = `
-  height: 60px;
-  width: 60px;
+  height: 50px;
+  width: 50px;
   border-radius: 50%;
   object-fit: cover;
   flex: 1;
   display: block;
   margin: 0 auto;
-  margin-top: 19px;
-  box-shadow: 0 0 0 10px #0D0D0D;
+  margin-top: 40px;
+  box-shadow: 0 0 0 10px #1F1F1F;
   transition: transform 0.6s ease, box-shadow 0.3s ease;
   cursor: pointer;
 `;
 
 title.onmouseenter = () => {
-  title.style.boxShadow = '0 0 6px 4px #fff063, 0 0 0 10px #0D0D0D';
+  title.style.boxShadow = '0 0 1px #1F1F1F, 0 0 0 2px #1F1F1F';
+  title.style.transform ='scale(1.2)';
 };
 title.onmouseleave = () => {
-  title.style.boxShadow = '0 0 0 10px #0D0D0D';
+  title.style.boxShadow = '0 0 0 10px #1F1F1F';
+   title.style.transform ='scale(1)';
 };
 
 title.onclick = () => {
@@ -76,8 +84,9 @@ title.onclick = () => {
   loginButton.textContent = 'Log In';
   loginButton.style.cssText = `
     padding: 0.5rem 1rem;
-    background-color: black;
-    color: white;
+    background-color: #1F1F1F;
+    width: 90px;
+    color: #F4B400;
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -87,13 +96,15 @@ title.onclick = () => {
   `;
   loginButton.onmouseenter = () => {
     loginButton.style.backgroundColor = '#333';
-    loginButton.style.transform = 'translateY(-2px)';
+    loginButton.style.color = 'red';
+    loginButton.style.transform = 'scale(1.2)';
   };
   loginButton.onmouseleave = () => {
-    loginButton.style.backgroundColor = 'black';
-    loginButton.style.transform = 'translateY(0)';
+    loginButton.style.backgroundColor = '#1F1F1F';
+    loginButton.style.color = '#F4B400';
+    loginButton.style.transform = 'scale(1)';
   };
-  loginButton.onclick = () => alert('🔐 You clicked Log In');
+  loginButton.onclick = () => renderLoginModal();
 
   // === CENTER WRAPPER ===
   const centerWrapper = document.createElement('div');
