@@ -9,12 +9,12 @@ export function renderHeroMobile() {
     document.body.style.overflow = 'hidden';
 
     const navbar = document.querySelector('nav');
-    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.4);
+    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.8);
 
     const hero = document.createElement('main');
     hero.style.cssText = `
-    margin-top: ${navbarHeight}px;
-    height: calc(100vh - ${navbarHeight}px);
+    margin-top: 20vw;
+    height: calc(100vh - 20vw);
     display: flex;
     flex-direction: column;
     background-color: #1F1F1F;
