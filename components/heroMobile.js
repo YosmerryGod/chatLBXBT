@@ -9,7 +9,7 @@ export function renderHeroMobile() {
     document.body.style.overflow = 'hidden';
 
     const navbar = document.querySelector('nav');
-    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.2);
+    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.4);
 
     const hero = document.createElement('main');
     hero.style.cssText = `
