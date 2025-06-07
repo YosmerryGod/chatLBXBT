@@ -4,18 +4,17 @@ import { handleMSG1 } from '../func/handleExample.js';
 const chatHistory = [];
 
 export function renderHeroMobile() {
-  document.body.style.margin = '0';
-  document.body.style.height = '100vh';
-  document.body.style.overflow = 'hidden';
+    document.body.style.margin = '0';
+    document.body.style.height = '100vh';
+    document.body.style.overflow = 'hidden';
 
-  const isMobile = window.innerHeight > window.innerWidth;
-  const navbar = document.querySelector('nav');
-  const navbarHeight = navbar?.offsetHeight || 75;
+    const navbar = document.querySelector('nav');
+    const navbarHeight = navbar?.offsetHeight || (window.innerWidth * 0.2);
 
-  const hero = document.createElement('main');
-  hero.style.cssText = `
+    const hero = document.createElement('main');
+    hero.style.cssText = `
     margin-top: ${navbarHeight}px;
-    height: ${isMobile ? `calc(70% - ${navbarHeight}px)` : `calc(50% - ${navbarHeight}px)`};
+    height: calc(100vh - ${navbarHeight}px);
     display: flex;
     flex-direction: column;
     background-color: #1F1F1F;
@@ -23,9 +22,9 @@ export function renderHeroMobile() {
     overflow: hidden;
   `;
 
-  const chatBox = document.createElement('div');
-  chatBox.id = 'chat-box';
-  chatBox.style.cssText = `
+    const chatBox = document.createElement('div');
+    chatBox.id = 'chat-box';
+    chatBox.style.cssText = `
     flex: 1;
     overflow-y: auto;
     display: flex;
@@ -39,11 +38,17 @@ export function renderHeroMobile() {
     -ms-overflow-style: none;
   `;
 
-  const style = document.createElement('style');
-  style.textContent = `
+    const style = document.createElement('style');
+    style.textContent = `
+    
     #chat-box::-webkit-scrollbar {
       width: 6px;
     }
+
+    #chat-input::placeholder {
+  font-size: 2rem;
+  color: #aaa;
+}
     #chat-box::-webkit-scrollbar-track {
       background: transparent;
     }
@@ -74,125 +79,127 @@ export function renderHeroMobile() {
       scrollbar-width: none;
     }
   `;
-  document.head.appendChild(style);
+    document.head.appendChild(style);
 
-  const placeholder = document.createElement('div');
-  placeholder.className = 'placeholder';
-  placeholder.textContent = 'hello NeuroBean';
-  placeholder.style.cssText = `
+    const placeholder = document.createElement('div');
+    placeholder.className = 'placeholder';
+    placeholder.textContent = 'hello NeuroBean';
+    placeholder.style.cssText = `
     color: #CD9800;
-    font-size: ${isMobile ? '1.5rem' : '2rem'};
+    font-size: 5rem;
     text-align: center;
     margin: auto;
     pointer-events: none;
     position: absolute;
-    top: ${isMobile ? '30%' : '40%'};
+    top: 40%;
     left: 0;
     right: 0;
   `;
-  chatBox.appendChild(placeholder);
+    chatBox.appendChild(placeholder);
 
-  const templateBox = document.createElement('div');
-  templateBox.className = 'template-box';
-  templateBox.style.cssText = `
+    const templateBox = document.createElement('div');
+    templateBox.className = 'template-box';
+    templateBox.style.cssText = `
     display: flex;
     flex-direction: row;
     overflow-x: auto;
     flex-wrap: nowrap;
     gap: 1rem;
-    height: 6rem;
-    padding: 1rem 0;
+      height: 7.5rem;
+  padding: 1.2rem 0;
+
     scroll-snap-type: x mandatory;
     background-color: #1F1F1F;
     -webkit-overflow-scrolling: touch;
   `;
 
-  const templateWrapper = document.createElement('div');
-  templateWrapper.style.cssText = `
+    const templateWrapper = document.createElement('div');
+    templateWrapper.style.cssText = `
     padding: 0 1rem;
     box-sizing: border-box;
   `;
-  templateWrapper.appendChild(templateBox);
+    templateWrapper.appendChild(templateBox);
 
-  const templates = [
-    'Explain what the LilBean project is about',
-    'Who is ChatBean and what can it do?',
-    "Give me today's BTC market analysis",
-    'What is the roadmap for LilBean?',
-    'Tell me about the utility of LilBean'
-  ];
+    const templates = [
+        'Explain what the LilBean project is about',
+        'Who is ChatBean and what can it do?',
+        "Give me today's BTC market analysis",
+        'What is the roadmap for LilBean?',
+        'Tell me about the utility of LilBean'
+    ];
 
-  const input = document.createElement('textarea');
-  const button = document.createElement('button');
+    const input = document.createElement('textarea');
+    const button = document.createElement('button');
 
-  templates.forEach(templateText => {
-    const btn = document.createElement('button');
-    btn.textContent = templateText;
-    btn.style.cssText = `
+    templates.forEach(templateText => {
+        const btn = document.createElement('button');
+        btn.textContent = templateText;
+        btn.style.cssText = `
       flex: 0 0 auto;
       white-space: nowrap;
-      padding: 1rem 1.5rem;
+      padding: 1.2rem 2rem;
       background-color: transparent;
       border: 1px solid #CD9800;
-      border-radius: 8px;
+      border-radius: 10px;
       color: #CD9800;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 500;
       scroll-snap-align: start;
     `;
-    btn.onclick = () => {
-      input.value = templateText;
-      button.click();
-    };
-    templateBox.appendChild(btn);
-  });
+        btn.onclick = () => {
+            input.value = templateText;
+            button.click();
+        };
+        templateBox.appendChild(btn);
+    });
 
-  let isDown = false;
-  let startX;
-  let scrollLeft;
+    let isDown = false;
+    let startX;
+    let scrollLeft;
 
-  templateBox.addEventListener('mousedown', (e) => {
-    isDown = true;
-    templateBox.classList.add('dragging');
-    startX = e.pageX - templateBox.offsetLeft;
-    scrollLeft = templateBox.scrollLeft;
-  });
+    templateBox.addEventListener('mousedown', (e) => {
+        isDown = true;
+        templateBox.classList.add('dragging');
+        startX = e.pageX - templateBox.offsetLeft;
+        scrollLeft = templateBox.scrollLeft;
+    });
 
-  templateBox.addEventListener('mouseleave', () => {
-    isDown = false;
-    templateBox.classList.remove('dragging');
-  });
+    templateBox.addEventListener('mouseleave', () => {
+        isDown = false;
+        templateBox.classList.remove('dragging');
+    });
 
-  templateBox.addEventListener('mouseup', () => {
-    isDown = false;
-    templateBox.classList.remove('dragging');
-  });
+    templateBox.addEventListener('mouseup', () => {
+        isDown = false;
+        templateBox.classList.remove('dragging');
+    });
 
-  templateBox.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - templateBox.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    templateBox.scrollLeft = scrollLeft - walk;
-  });
+    templateBox.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - templateBox.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        templateBox.scrollLeft = scrollLeft - walk;
+    });
 
-  const inputWrapper = document.createElement('div');
-  inputWrapper.style.cssText = `
+    const inputWrapper = document.createElement('div');
+    inputWrapper.style.cssText = `
     width: 100%;
     position: relative;
     padding: 1rem;
     background-color: #1F1F1F;
   `;
 
-  input.id = 'chat-input';
-  input.placeholder = 'Ask anything...';
-  input.style.cssText = `
+    input.id = 'chat-input';
+    input.placeholder = 'Ask anything...';
+    input.style.cssText = `
     width: 100%;
+    height: 50vw;
     min-height: 3rem;
     max-height: 200px;
     padding: 0.8rem 3rem 2.5rem 1rem;
-    font-size: 1rem;
+    font-size: 1.3rem;
     border-radius: 8px;
     border: none;
     outline: none;
@@ -204,74 +211,75 @@ export function renderHeroMobile() {
     color: white;
   `;
 
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = input.scrollHeight + 'px';
-  });
+    input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = input.scrollHeight + 'px';
+    });
 
-  button.textContent = '➤';
-  button.style.cssText = `
+    button.textContent = '➤';
+    button.style.cssText = `
     position: absolute;
     bottom: 1.8rem;
     right: 1.6rem;
     background-color: #F4B400;
     color: black;
     border: none;
-    padding: 0.5rem 0.8rem;
+    padding: 0.7rem 1rem;       /* lebih besar */
+  font-size: 1.3rem;          /* lebih besar */
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
   `;
 
-  button.onclick = async () => {
-    const text = input.value.trim();
-    if (!text) return;
+    button.onclick = async () => {
+        const text = input.value.trim();
+        if (!text) return;
 
-    input.value = '';
-    input.style.height = 'auto';
-    addMessage('user', text);
-    chatHistory.push({ role: 'user', content: text });
+        input.value = '';
+        input.style.height = 'auto';
+        addMessage('user', text);
+        chatHistory.push({ role: 'user', content: text });
 
-    const bubble = addMessage('bot', '⏳ NeuroBean is thinking...');
-    const response = await generateResponse();
+        const bubble = addMessage('bot', '⏳ NeuroBean is thinking...');
+        const response = await generateResponse();
 
-    chatHistory.push({ role: 'bot', content: response });
-    typeResponse(bubble, response, true);
-  };
+        chatHistory.push({ role: 'bot', content: response });
+        typeResponse(bubble, response, true);
+    };
 
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      button.click();
-    }
-  });
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            button.click();
+        }
+    });
 
-  inputWrapper.appendChild(input);
-  inputWrapper.appendChild(button);
+    inputWrapper.appendChild(input);
+    inputWrapper.appendChild(button);
 
-  hero.appendChild(chatBox);
-  hero.appendChild(templateWrapper);
-  hero.appendChild(inputWrapper);
-  document.body.appendChild(hero);
+    hero.appendChild(chatBox);
+    hero.appendChild(templateWrapper);
+    hero.appendChild(inputWrapper);
+    document.body.appendChild(hero);
 }
 
 function addMessage(sender, text, parseBold = false) {
-  const chatBox = document.getElementById('chat-box');
-  const placeholder = chatBox.querySelector('.placeholder');
-  if (placeholder) placeholder.remove();
+    const chatBox = document.getElementById('chat-box');
+    const placeholder = chatBox.querySelector('.placeholder');
+    if (placeholder) placeholder.remove();
 
-  const templateBox = document.querySelector('.template-box');
-  if (templateBox) templateBox.style.display = 'none';
+    const templateBox = document.querySelector('.template-box');
+    if (templateBox) templateBox.style.display = 'none';
 
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = `
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
     display: flex;
     justify-content: ${sender === 'user' ? 'flex-end' : 'flex-start'};
     margin-bottom: 0.75rem;
   `;
 
-  const bubble = document.createElement('div');
-  bubble.style.cssText = `
+    const bubble = document.createElement('div');
+    bubble.style.cssText = `
     max-width: 80%;
     padding: 0.7rem 1rem;
     border-radius: 12px;
@@ -279,55 +287,56 @@ function addMessage(sender, text, parseBold = false) {
     color: white;
     word-wrap: break-word;
     line-height: 1.4;
+    font-size: 2rem;
   `;
 
-  if (parseBold) {
-    const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    bubble.innerHTML = formatted;
-  } else {
-    bubble.textContent = text;
-  }
+    if (parseBold) {
+        const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        bubble.innerHTML = formatted;
+    } else {
+        bubble.textContent = text;
+    }
 
-  wrapper.appendChild(bubble);
-  chatBox.appendChild(wrapper);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  return bubble;
+    wrapper.appendChild(bubble);
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return bubble;
 }
 
 async function generateResponse() {
-  try {
-    const lastMessage = chatHistory.slice(-1);
-    const context = lastMessage
-      .map(msg => `${msg.role === 'user' ? 'You' : 'NeuroBean'}: ${msg.content}`)
-      .join('\n');
+    try {
+        const lastMessage = chatHistory.slice(-1);
+        const context = lastMessage
+            .map(msg => `${msg.role === 'user' ? 'You' : 'NeuroBean'}: ${msg.content}`)
+            .join('\n');
 
-    const reply = await handleMSG1(context);
-    return reply || "Sorry NeuroBean Error";
-  } catch (err) {
-    console.error("Gemini error:", err);
-    return "Error Call NeuroBean";
-  }
+        const reply = await handleMSG1(context);
+        return reply || "Sorry NeuroBean Error";
+    } catch (err) {
+        console.error("Gemini error:", err);
+        return "Error Call NeuroBean";
+    }
 }
 
 function typeResponse(element, text, parseBold = false, delay = 10) {
-  let i = 0;
-  let targetText = text;
+    let i = 0;
+    let targetText = text;
 
-  if (parseBold) {
-    targetText = targetText.replace(/\*\*(.*?)\*\*/g, (_, p1) => `<strong>${p1}</strong>`);
-    element.innerHTML = '';
-  } else {
-    element.textContent = '';
-  }
-
-  const interval = setInterval(() => {
     if (parseBold) {
-      element.innerHTML = targetText.slice(0, i + 1);
+        targetText = targetText.replace(/\*\*(.*?)\*\*/g, (_, p1) => `<strong>${p1}</strong>`);
+        element.innerHTML = '';
     } else {
-      element.textContent += text.charAt(i);
+        element.textContent = '';
     }
 
-    i++;
-    if (i >= targetText.length) clearInterval(interval);
-  }, delay);
+    const interval = setInterval(() => {
+        if (parseBold) {
+            element.innerHTML = targetText.slice(0, i + 1);
+        } else {
+            element.textContent += text.charAt(i);
+        }
+
+        i++;
+        if (i >= targetText.length) clearInterval(interval);
+    }, delay);
 }
