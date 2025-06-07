@@ -105,7 +105,7 @@ export function renderHeroMobile() {
     overflow-x: auto;
     flex-wrap: nowrap;
     gap: 1rem;
-      height: 7.5rem;
+      height: 15rem;
   padding: 1.2rem 0;
 
     scroll-snap-type: x mandatory;
@@ -143,7 +143,7 @@ export function renderHeroMobile() {
       border-radius: 10px;
       color: #CD9800;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 2rem;
       font-weight: 500;
       scroll-snap-align: start;
     `;
@@ -189,7 +189,7 @@ export function renderHeroMobile() {
     position: relative;
     padding: 1rem;
     background-color: #1F1F1F;
-    margin-bottom: 5%;
+    margin-bottom: 25%;
   `;
 
     input.id = 'chat-input';
@@ -225,7 +225,7 @@ export function renderHeroMobile() {
     background-color: #F4B400;
     color: black;
     border: none;
-    padding: 0.7rem 1rem;       /* lebih besar */
+    padding: 0.9rem 1.2rem;       /* lebih besar */
   font-size: 1.3rem;          /* lebih besar */
     border-radius: 8px;
     font-weight: bold;
@@ -237,7 +237,7 @@ export function renderHeroMobile() {
         if (!text) return;
 
         input.value = '';
-        input.style.height = 'auto';
+        // input.style.height = 'auto';
         addMessage('user', text);
         chatHistory.push({ role: 'user', content: text });
 

@@ -1,5 +1,5 @@
 import { renderHeroSection } from './hero.js';
-import { renderLoginModal } from './login.js';
+import { renderLoginModalMobile } from './loginMobile.js';
 
 export function renderNavbar() {
   const navbar = document.createElement('nav');
@@ -104,7 +104,7 @@ title.onclick = () => {
     loginButton.style.color = '#F4B400';
     loginButton.style.transform = 'scale(1)';
   };
-  loginButton.onclick = () => renderLoginModal();
+  loginButton.onclick = () => renderLoginModalMobile();
 
   // === CENTER WRAPPER ===
   const centerWrapper = document.createElement('div');
