@@ -18,7 +18,7 @@ function informationBean() {
 
 🧠 LilBean is Built on BNB, Enhanced by AI & Nonsense — a fully AI-managed meme token thriving on community chaos.
 
-🚀 Launch Schedule: 8 June, 15:00 UTC  
+🚀 Launch Schedule: ready launch
 💰 Total Supply: 1 Billion  
 🔁 Tax Buy & Sell: 0%  
 🔥 Liquidity Pool: Burned  
@@ -29,7 +29,7 @@ function informationBean() {
 🔗 Blockchain Info:
 - 🪙 Token Name: LilBean
 - 🔗 Chain: BNB Smart Chain (BEP-20)
-- 📜 Contract Address: 0xdead *(pre-launch placeholder)*
+- 📜 Contract Address: 0xad48c1cebd08841203fd866c7dc660a81e704444
 
 🔒 Security & Transparency:
 - ✅ Contract will be verified on BscScan
