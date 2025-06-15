@@ -1,7 +1,7 @@
 import { askGemini } from './askGemini.js';
 
 // Ambil data OHLCV Binance Futures
-async function getOHLCV(symbol = 'BTCUSDT', interval = '1d', limit = 200) {
+async function getOHLCV(symbol = 'BTCUSDT', interval = '1w', limit = 200) {
   const url = `https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch OHLCV');
@@ -71,51 +71,51 @@ Support 3: ${levels.s3.toFixed(5)}
   `.trim();
 
  return `
-You are a professional crypto futures analyst AI. Based on the data below, provide a concise and clear analysis for the symbol: **${symbol}** 📊
+You are a professional crypto futures analyst AI. Based on the data below for **${symbol}**, return the analysis in this exact format using Markdown:
 
-1. **Overall Signal**
-   - **Swing**: BUY / SELL / HOLD  
-   - **Intraday**: BUY / SELL / HOLD
+📊 ${symbol} Analysis
 
-2. **Key Levels**
-   - **Pivot**:  
-   - **Resistance**: R1, R2, R3  
-   - **Support**: S1, S2, S3
+1. Overall Signal 📈  
+• Swing: BUY / SELL / HOLD  
+• Intraday: BUY / SELL / HOLD  
 
-3. **Entry Strategy**
-   - **Swing Trade**
-     • Entry:  
-     • Stop Loss (SL):  
-     • Take Profit (TP):  
-   
-   - **Intraday Trade**
-     • Entry:  
-     • Stop Loss (SL):  
-     • Take Profit (TP):  
+2. Key Levels  
+• Pivot: [value]  
+• Resistance 1: [value]  
+• Resistance 2: [value]  
+• Resistance 3: [value]  
+• Support 1: [value]  
+• Support 2: [value]  
+• Support 3: [value]  
 
-4. **Constraints**
-   - Use clear bullet points  
-   - Add 2–3 relevant emojis  
-   - Ensure professional formatting
+3. Entry Strategy 🚀  
+• Swing Trade  
+  – Entry:  
+  – SL:  
+  – TP:  
+
+• Intraday Trade  
+  – Entry:  
+  – SL:  
+  – TP:  
+
+Write 2–4 short sentences about price action, sentiment, and risk, with 2–3 fitting emojis. Keep it under 500 words.
 
 ---
 
-**Data Provided**  
-• OHLCV (Last 5 candles):  
-${textOHLCV}  
+Data:  
+OHLCV (Last 5):
+${textOHLCV}
 
-• Order Book Snapshot:  
-${textOrderBook}  
+Order Book:
+${textOrderBook}
 
-• Funding Rate Info:  
-${textFundingRate}  
+Funding Rate:
+${textFundingRate}
 
-• Pivot Levels:  
-${textLevels}  
-
-Now generate your analysis.
+Pivot Levels:
+${textLevels}
 `.trim();
-
 }
 
 // Fungsi utama: dapatkan analisis dari Gemini AI
@@ -123,16 +123,9 @@ export async function getGeminiAnalysis(symbol = 'BTCUSDT') {
   try {
     const prompt = await createPrompt(symbol);
     const analysis = await askGemini(prompt);
-
-    if (!analysis) return '⚠️ No response generated.';
-
-    // Ganti bintang satu (*) yang berdiri sendiri dengan baris baru
-    const formatted = analysis.replace(/(^|\s)\*(?!\*)(.*?)\*(?=\s|$)/g, '\n$3\n');
-
-    return formatted.trim();
+    return analysis || '⚠️ No response generated.';
   } catch (error) {
-    console.error('Error in getGeminiAnalysis:', error);
-    return '❌ NeiroBean Failed to generate analysis.';
+    console.error('[getGeminiAnalysis] Error:', error.message);
+    return '❌ Failed to analyze market data.';
   }
 }
-
