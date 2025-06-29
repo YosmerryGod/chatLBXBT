@@ -4,22 +4,34 @@ import { handleMSG1 } from '../func/handleExample.js';
 const chatHistory = [];
 
 export function renderHeroSection() {
+  const existingMain = document.querySelector('main');
+  if (existingMain) existingMain.remove();
+
   document.body.style.margin = '0';
   document.body.style.height = '100vh';
   document.body.style.overflow = 'hidden';
 
-  const navbar = document.querySelector('nav');
+  const sidebar = document.querySelector('#sidebar');
+  const isCollapsed = sidebar?.classList.contains('collapsed');
+  const sidebarWidth = isCollapsed ? 60 : 75;
+
+  const navbar = document.querySelector('#topbar');
   const navbarHeight = navbar?.offsetHeight || 60;
 
   const hero = document.createElement('main');
   hero.style.cssText = `
     margin-top: ${navbarHeight}px;
+    margin-left: ${sidebarWidth}px;
+    width: calc(100vw - ${sidebarWidth}px);
     height: calc(100vh - ${navbarHeight}px);
     display: flex;
     flex-direction: column;
     background-color: #1F1F1F;
     box-sizing: border-box;
     overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
   `;
 
   const chatBox = document.createElement('div');
@@ -38,142 +50,70 @@ export function renderHeroSection() {
     -ms-overflow-style: none;
   `;
 
-  const style = document.createElement('style');
-  style.textContent = `
-    #chat-box::-webkit-scrollbar {
-      width: 6px;
-    }
-    #chat-box::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    #chat-box::-webkit-scrollbar-thumb {
-      background-color: #5e5e5e;
-      border-radius: 3px;
-    }
-    #chat-box {
-      scrollbar-width: thin;
-      scrollbar-color: #5e5e5e transparent;
-    }
-    .template-box::-webkit-scrollbar {
-      display: none;
-    }
-    .template-box {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .template-box.dragging {
-      cursor: grabbing;
-      user-select: none;
-    }
-    #chat-input::-webkit-scrollbar {
-      width: 0px;
-      background: transparent;
-    }
-    #chat-input {
-      scrollbar-width: none;
-    }
-  `;
-  document.head.appendChild(style);
-
   const placeholder = document.createElement('div');
   placeholder.className = 'placeholder';
-  placeholder.textContent = 'hello NeuroBean';
+  placeholder.textContent = 'Welcome to Neuro Bean Assistant';
   placeholder.style.cssText = `
-    color: #CD9800;
-    font-size: 2rem;
-    text-align: center;
-    margin: auto;
-    pointer-events: none;
-    position: absolute;
-    top: 40%;
-    left: 0;
-    right: 0;
-  `;
-  chatBox.appendChild(placeholder);
+  color: #CD9800;
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 0.1rem;
+  pointer-events: none;
+`;
+
+const desc = document.createElement('div');
+  desc.className = 'desc';
+  desc.textContent = 'how can i help you today?';
+  desc.style.cssText = `
+  color:rgb(253, 253, 253);
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+  pointer-events: none;
+`;
+
 
   const templateBox = document.createElement('div');
   templateBox.className = 'template-box';
   templateBox.style.cssText = `
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    height: 6rem;
-    padding: 1rem 0;
-    scroll-snap-type: x mandatory;
+    padding: 1rem;
     background-color: #1F1F1F;
-    -webkit-overflow-scrolling: touch;
   `;
-
-  const templateWrapper = document.createElement('div');
-  templateWrapper.style.cssText = `
-    padding: 0 1rem;
-    box-sizing: border-box;
-  `;
-  templateWrapper.appendChild(templateBox);
 
   const templates = [
     'Explain what the LilBean project is about',
     'Who is ChatBean and what can it do?',
     "Give me today's BTC market analysis",
     'What is the roadmap for LilBean?',
-    'Tell me about the utility of LilBean'
+    'Tell me about the utility of LilBean',
+    'How does LilBean differ from other bots?'
   ];
 
-  const input = document.createElement('textarea');
-  const button = document.createElement('button');
-
-  templates.forEach(templateText => {
+  templates.forEach(temp => {
     const btn = document.createElement('button');
-    btn.textContent = templateText;
+    btn.textContent = temp;
     btn.style.cssText = `
-      flex: 0 0 auto;
-      white-space: nowrap;
-      padding: 1rem 1.5rem;
+      padding: 0.75rem 1rem;
       background-color: transparent;
       border: 1px solid #CD9800;
-      border-radius: 8px;
+      border-radius: 0.5rem;
       color: #CD9800;
       cursor: pointer;
       font-size: 1rem;
       font-weight: 500;
-      scroll-snap-align: start;
+      width: 100%;
+      text-align: center;
     `;
     btn.onclick = () => {
-      input.value = templateText;
-      button.click();
+      input.value = temp;
+      sendBtn.click();
     };
     templateBox.appendChild(btn);
-  });
-
-  let isDown = false;
-  let startX;
-  let scrollLeft;
-
-  templateBox.addEventListener('mousedown', (e) => {
-    isDown = true;
-    templateBox.classList.add('dragging');
-    startX = e.pageX - templateBox.offsetLeft;
-    scrollLeft = templateBox.scrollLeft;
-  });
-
-  templateBox.addEventListener('mouseleave', () => {
-    isDown = false;
-    templateBox.classList.remove('dragging');
-  });
-
-  templateBox.addEventListener('mouseup', () => {
-    isDown = false;
-    templateBox.classList.remove('dragging');
-  });
-
-  templateBox.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - templateBox.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    templateBox.scrollLeft = scrollLeft - walk;
   });
 
   const inputWrapper = document.createElement('div');
@@ -184,32 +124,27 @@ export function renderHeroSection() {
     background-color: #1F1F1F;
   `;
 
+  const input = document.createElement('textarea');
   input.id = 'chat-input';
   input.placeholder = 'Ask anything...';
   input.style.cssText = `
     width: 100%;
     min-height: 3rem;
-    max-height: 200px;
+    max-height: 12.5rem;
     padding: 0.8rem 3rem 2.5rem 1rem;
     font-size: 1rem;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     border: none;
     outline: none;
     resize: none;
-    line-height: 1.4;
     overflow-y: auto;
-    box-sizing: border-box;
     background-color: #2B2B2B;
     color: white;
   `;
 
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = input.scrollHeight + 'px';
-  });
-
-  button.textContent = '➤';
-  button.style.cssText = `
+  const sendBtn = document.createElement('button');
+  sendBtn.textContent = '➤';
+  sendBtn.style.cssText = `
     position: absolute;
     bottom: 1.8rem;
     right: 1.6rem;
@@ -217,50 +152,56 @@ export function renderHeroSection() {
     color: black;
     border: none;
     padding: 0.5rem 0.8rem;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     font-weight: bold;
     cursor: pointer;
   `;
 
-  button.onclick = async () => {
-    const text = input.value.trim();
-    if (!text) return;
+sendBtn.onclick = async () => {
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
 
-    input.value = '';
-    input.style.height = 'auto';
-    addMessage('user', text);
-    chatHistory.push({ role: 'user', content: text });
+  // Hapus template box jika masih ada
+  const templateBox = document.querySelector('.template-box');
+  if (templateBox) templateBox.remove();
 
-    const bubble = addMessage('bot', '⏳ NeuroBean is thinking...');
-    const response = await generateResponse();
+  // Hapus placeholder dan desc jika masih ada
+  const placeholder = document.querySelector('.placeholder');
+  if (placeholder) placeholder.remove();
 
-    chatHistory.push({ role: 'bot', content: response });
-    typeResponse(bubble, response, true);
-  };
+  const desc = document.querySelector('.desc');
+  if (desc) desc.remove();
 
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      button.click();
-    }
-  });
+  addMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  const bubble = addMessage('bot', '⏳ NeuroBean is thinking...');
+  const response = await generateResponse();
+
+  chatHistory.push({ role: 'bot', content: response });
+  typeResponse(bubble, response, true);
+};
+
+
 
   inputWrapper.appendChild(input);
-  inputWrapper.appendChild(button);
+  inputWrapper.appendChild(sendBtn);
 
   hero.appendChild(chatBox);
-  hero.appendChild(templateWrapper);
+  hero.appendChild(placeholder);
+  hero.appendChild(desc);
+  hero.appendChild(templateBox);
   hero.appendChild(inputWrapper);
   document.body.appendChild(hero);
 }
 
+// Helper functions remain unchanged
 function addMessage(sender, text, parseBold = false) {
   const chatBox = document.getElementById('chat-box');
   const placeholder = chatBox.querySelector('.placeholder');
   if (placeholder) placeholder.remove();
-
-  const templateBox = document.querySelector('.template-box');
-  if (templateBox) templateBox.style.display = 'none';
 
   const wrapper = document.createElement('div');
   wrapper.style.cssText = `
@@ -273,16 +214,14 @@ function addMessage(sender, text, parseBold = false) {
   bubble.style.cssText = `
     max-width: 80%;
     padding: 0.7rem 1rem;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     background-color: ${sender === 'user' ? '#2B2B2B' : 'transparent'};
     color: white;
-    word-wrap: break-word;
     line-height: 1.4;
   `;
 
   if (parseBold) {
-    const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    bubble.innerHTML = formatted;
+    bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   } else {
     bubble.textContent = text;
   }
@@ -296,10 +235,7 @@ function addMessage(sender, text, parseBold = false) {
 async function generateResponse() {
   try {
     const lastMessage = chatHistory.slice(-1);
-    const context = lastMessage
-      .map(msg => `${msg.role === 'user' ? 'You' : 'NeuroBean'}: ${msg.content}`)
-      .join('\n');
-
+    const context = lastMessage.map(msg => `${msg.role === 'user' ? 'You' : 'NeuroBean'}: ${msg.content}`).join('\n');
     const reply = await handleMSG1(context);
     return reply || "Sorry NeuroBean Error";
   } catch (err) {
@@ -310,21 +246,12 @@ async function generateResponse() {
 
 function typeResponse(element, text, parseBold = false, delay = 10) {
   let i = 0;
-  let targetText = text;
-
-  if (parseBold) {
-    targetText = targetText.replace(/\*\*(.*?)\*\*/g, (_, p1) => `<strong>${p1}</strong>`);
-    element.innerHTML = '';
-  } else {
-    element.textContent = '';
-  }
+  let targetText = parseBold ? text.replace(/\*\*(.*?)\*\*/g, (_, p1) => `<strong>${p1}</strong>`) : text;
+  if (parseBold) element.innerHTML = ''; else element.textContent = '';
 
   const interval = setInterval(() => {
-    if (parseBold) {
-      element.innerHTML = targetText.slice(0, i + 1);
-    } else {
-      element.textContent += text.charAt(i);
-    }
+    if (parseBold) element.innerHTML = targetText.slice(0, i + 1);
+    else element.textContent += text.charAt(i);
 
     i++;
     if (i >= targetText.length) clearInterval(interval);
