@@ -185,25 +185,28 @@ export function renderHeroMobile() {
   input.id = 'chat-input';
   input.placeholder = 'Ask anything...';
   input.style.cssText = `
-    width: 100%;
-    height: auto;
-    min-height: 3rem;
-    max-height: 30vh;
-    padding: 1rem 3rem 2.5rem 1rem;
-    font-size: 1.2rem;
-    border-radius: 0.5rem;
-    background-color: #2B2B2B;
-    color: white;
-    border: none;
-    resize: none;
-    overflow-y: auto;
-    box-sizing: border-box;
-  `;
+  width: 100%;
+  height: auto;
+  min-height: 8rem;
+  max-height: 35vh;
+  padding: 1.2rem 3rem 2.5rem 1.2rem;
+  font-size: 2.5rem;
+  border-radius: 0.5rem;
+  background-color: #2B2B2B;
+  color: white;
+  border: none;
+  resize: none;
+  overflow-y: hidden;
+  box-sizing: border-box;
+  transition: height 0.2s ease;
+`;
 
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = input.scrollHeight + 'px';
-  });
+
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  const newHeight = Math.min(input.scrollHeight, window.innerHeight * 0.35); // max 35% layar
+  input.style.height = `${newHeight}px`;
+});
 
   button.textContent = '➤';
   button.style.cssText = `

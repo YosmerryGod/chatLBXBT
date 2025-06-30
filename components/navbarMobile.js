@@ -181,7 +181,7 @@ export function renderNavbarMobile() {
   const versionDropdown = document.createElement('div');
   versionDropdown.style.cssText = `
     position: absolute;
-    top: 14vw;
+    top: 14dvw;
     left: 50%;
     transform: translateX(-50%);
     background-color: #1F1F1F;
