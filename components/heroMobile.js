@@ -4,71 +4,66 @@ import { handleMSG1 } from '../func/handleExample.js';
 const chatHistory = [];
 
 export function renderHeroMobile() {
-  document.body.style.margin = '0';
-  document.body.style.height = '100vh';
-  document.body.style.overflow = 'hidden';
+  document.body.style.cssText = `
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #1F1F1F;
+  `;
 
   const navbar = document.querySelector('nav');
-const navbarHeight = navbar?.offsetHeight || 200;
+  const navbarHeight = navbar?.offsetHeight || window.innerHeight * 0.12;
 
-const hero = document.createElement('main');
-hero.style.cssText = `
-  margin-top: ${navbarHeight}px;
-  height: calc(100vh - ${navbarHeight}px);
-  display: flex;
-  flex-direction: column;
-  background-color: #1F1F1F;
-  box-sizing: border-box;
-  overflow: hidden;
-`;
+  const hero = document.createElement('main');
+  hero.style.cssText = `
+    margin-top: ${navbarHeight}px;
+    height: calc(100vh - ${navbarHeight}px);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+  `;
 
   const chatBox = document.createElement('div');
   chatBox.id = 'chat-box';
- chatBox.style.cssText = `
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  color: white;
-  font-size: 0.95rem;
-  background-color: #1F1F1F;
-  padding: 1rem;
-  scrollbar-width: thin;
-  position: relative;
-`;
-
+  chatBox.style.cssText = `
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: white;
+    font-size: 0.95rem;
+    padding: 1.5rem 1rem;
+    position: relative;
+    background-color: #1F1F1F;
+    padding-bottom: 20vh;
+  `;
 
   const style = document.createElement('style');
   style.textContent = `
-    #chat-box::-webkit-scrollbar { width: 6px; }
-    #chat-box::-webkit-scrollbar-track { background: transparent; }
-    #chat-box::-webkit-scrollbar-thumb { background-color: #5e5e5e; border-radius: 3px; }
-    #chat-box { scrollbar-width: thin; scrollbar-color: #5e5e5e transparent; }
+    #chat-box::-webkit-scrollbar { width: 0.5rem; }
+    #chat-box::-webkit-scrollbar-thumb { background-color: #5e5e5e; border-radius: 0.25rem; }
 
     .template-box::-webkit-scrollbar { display: none; }
-    .template-box { scrollbar-width: none; -ms-overflow-style: none; }
-    .template-box.dragging { cursor: grabbing; user-select: none; }
+    .template-box { scrollbar-width: none; }
 
-    #chat-input::-webkit-scrollbar { width: 0px; background: transparent; }
-    #chat-input { scrollbar-width: none; }
-
+    #chat-input::-webkit-scrollbar { display: none; }
     #chat-input::placeholder {
-      font-size: 2rem;
+      font-size: 1.5rem;
       color: #aaa;
     }
   `;
   document.head.appendChild(style);
 
-  // === Placeholder + Desc ===
+  // === Placeholder ===
   const placeholder = document.createElement('div');
   placeholder.id = 'placeholder';
   placeholder.style.cssText = `
     position: absolute;
     top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     pointer-events: none;
     display: flex;
@@ -80,40 +75,44 @@ hero.style.cssText = `
   title.textContent = 'Welcome to Neuro Bean Assistant';
   title.style.cssText = `
     color: #CD9800;
-    font-size: clamp(2rem, 6vw, 3rem);
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
     font-weight: 600;
   `;
 
   const desc = document.createElement('div');
-  desc.textContent = 'how can i help you today?';
+  desc.textContent = 'how can I help you today?';
   desc.style.cssText = `
     color: #ffffff;
-    font-size: clamp(1.2rem, 4vw, 1.5rem);
-    margin-top: 0.3rem;
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    margin-top: 0.5rem;
     opacity: 0.9;
   `;
 
   placeholder.appendChild(title);
   placeholder.appendChild(desc);
 
-  // === Template Box ===
+  // === Template ===
   const templateBox = document.createElement('div');
   templateBox.className = 'template-box';
   templateBox.style.cssText = `
     display: flex;
-    flex-direction: row;
     overflow-x: auto;
-    flex-wrap: nowrap;
     gap: 1rem;
-    height: 15rem;
-    padding: 1.2rem 0;
+    height: 10rem;
+    padding: 1rem 1rem;
     scroll-snap-type: x mandatory;
     background-color: #1F1F1F;
-    -webkit-overflow-scrolling: touch;
   `;
 
   const templateWrapper = document.createElement('div');
-  templateWrapper.style.cssText = `padding: 0 1rem; box-sizing: border-box;`;
+  templateWrapper.style.cssText = `
+    position: fixed;
+    bottom: 12vh;
+    left: 0;
+    width: 100%;
+    background-color: #1F1F1F;
+    z-index: 9;
+  `;
   templateWrapper.appendChild(templateBox);
 
   const templates = [
@@ -127,82 +126,78 @@ hero.style.cssText = `
   const input = document.createElement('textarea');
   const button = document.createElement('button');
 
-  templates.forEach(templateText => {
+  templates.forEach(text => {
     const btn = document.createElement('button');
-    btn.textContent = templateText;
+    btn.textContent = text;
     btn.style.cssText = `
       flex: 0 0 auto;
-      white-space: nowrap;
-      padding: 1.2rem 2rem;
-      background-color: transparent;
+      padding: 1rem 2rem;
+      background: transparent;
       border: 1px solid #CD9800;
-      border-radius: 10px;
+      border-radius: 0.5rem;
       color: #CD9800;
-      cursor: pointer;
-      font-size: 2rem;
+      font-size: 1.2rem;
       font-weight: 500;
+      white-space: nowrap;
       scroll-snap-align: start;
     `;
     btn.onclick = () => {
-      input.value = templateText;
+      input.value = text;
       button.click();
     };
     templateBox.appendChild(btn);
   });
 
-  // === Drag scroll logic
+  // === Drag scroll
   let isDown = false;
   let startX, scrollLeft;
-  templateBox.addEventListener('mousedown', (e) => {
+  templateBox.addEventListener('mousedown', e => {
     isDown = true;
     templateBox.classList.add('dragging');
     startX = e.pageX - templateBox.offsetLeft;
     scrollLeft = templateBox.scrollLeft;
   });
-  templateBox.addEventListener('mouseleave', () => {
-    isDown = false;
-    templateBox.classList.remove('dragging');
+  ['mouseup', 'mouseleave'].forEach(ev => {
+    templateBox.addEventListener(ev, () => {
+      isDown = false;
+      templateBox.classList.remove('dragging');
+    });
   });
-  templateBox.addEventListener('mouseup', () => {
-    isDown = false;
-    templateBox.classList.remove('dragging');
-  });
-  templateBox.addEventListener('mousemove', (e) => {
+  templateBox.addEventListener('mousemove', e => {
     if (!isDown) return;
     e.preventDefault();
     const x = e.pageX - templateBox.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    templateBox.scrollLeft = scrollLeft - walk;
+    templateBox.scrollLeft = scrollLeft - (x - startX) * 1.5;
   });
 
-  // === Chat Input
+  // === Input
   const inputWrapper = document.createElement('div');
   inputWrapper.style.cssText = `
     width: 100%;
-    position: relative;
+    position: fixed;
+    bottom: 2vh;
+    left: 0;
     padding: 1rem;
     background-color: #1F1F1F;
-    margin-bottom: 30%;
+    z-index: 10;
   `;
 
   input.id = 'chat-input';
   input.placeholder = 'Ask anything...';
   input.style.cssText = `
     width: 100%;
-    height: 50vw;
+    height: auto;
     min-height: 3rem;
-    max-height: 200px;
-    padding: 0.8rem 3rem 2.5rem 1rem;
-    font-size: 1.3rem;
-    border-radius: 8px;
-    border: none;
-    outline: none;
-    resize: none;
-    line-height: 1.4;
-    overflow-y: auto;
-    box-sizing: border-box;
+    max-height: 30vh;
+    padding: 1rem 3rem 2.5rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 0.5rem;
     background-color: #2B2B2B;
     color: white;
+    border: none;
+    resize: none;
+    overflow-y: auto;
+    box-sizing: border-box;
   `;
 
   input.addEventListener('input', () => {
@@ -218,10 +213,9 @@ hero.style.cssText = `
     background-color: #F4B400;
     color: black;
     border: none;
-    padding: 0.9rem 1.2rem;
-    font-size: 1.3rem;
-    border-radius: 8px;
-    font-weight: bold;
+    padding: 0.8rem 1.1rem;
+    font-size: 1.2rem;
+    border-radius: 0.5rem;
     cursor: pointer;
   `;
 
@@ -253,6 +247,7 @@ hero.style.cssText = `
   hero.appendChild(inputWrapper);
   document.body.appendChild(hero);
 }
+
 
 
 // === Supporting functions ===

@@ -262,8 +262,66 @@ export function renderNavbar() {
   dropdownIcon.onmouseenter = () => dropdownIcon.style.transform = 'rotate(180deg)';
   dropdownIcon.onmouseleave = () => dropdownIcon.style.transform = 'rotate(0deg)';
 
+  
+
   leftWrapper.appendChild(appTitle);
   leftWrapper.appendChild(dropdownIcon);
+
+  // === DROPDOWN NEURO BEAN ===
+const dropdownMenu = document.createElement('div');
+dropdownMenu.style.cssText = `
+  position: absolute;
+  top: 2.5rem;
+  left: 1rem;
+  width: 220px;                     /* Lebarkan kotak dropdown */
+  background-color: #111;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.8rem 0;                /* Tambah ruang vertikal */
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+`;
+
+
+const options = [
+  { label: 'NeuroBean 1.0', active: true },
+  { label: 'NeuroBean 1.0 Plus', active: false },
+  { label: 'NeuroBean 2.0', active: false },
+];
+
+options.forEach(opt => {
+  const item = document.createElement('div');
+  item.innerHTML = opt.active
+  ? opt.label
+  : `<span>${opt.label}</span><span style="font-size: 0.8rem; color: #888; float: right;">soon</span>`;
+  item.style.cssText = `
+    padding: 0.6rem 1rem;
+    color: ${opt.active ? '#F4B400' : '#777'};
+    cursor: ${opt.active ? 'pointer' : 'default'};
+    font-weight: ${opt.active ? 'bold' : 'normal'};
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  `;
+  if (opt.active) {
+    item.onmouseenter = () => item.style.background = '#222';
+    item.onmouseleave = () => item.style.background = 'transparent';
+    item.onclick = () => {
+      appTitle.textContent = opt.label;
+      dropdownMenu.style.display = 'none';
+    };
+  }
+  dropdownMenu.appendChild(item);
+});
+
+leftWrapper.style.position = 'relative';
+leftWrapper.appendChild(dropdownMenu);
+
+dropdownIcon.onclick = () => {
+  dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+};
+
 
   const incognitoIcon = createIcon(`
     <path d="M9 9l-1-2h8l-1 2" />
