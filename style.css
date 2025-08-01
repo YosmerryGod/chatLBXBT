@@ -1,0 +1,116 @@
+/* === Global Reset === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: #1F1F1F;
+  font-family: Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* === Global Elements === */
+input, button, textarea, select {
+  font-family: inherit;
+  outline: none;
+  border: none;
+  touch-action: manipulation;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Sembunyikan scrollbar vertikal dan horizontal */
+body, html {
+  overflow-x: hidden;
+  scrollbar-width: none;       /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari */
+}
+
+/* === SCROLLBAR STYLING === */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1F1F1F; /* sama dengan background utama */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #F4B400; /* kuning LBXBT */
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ffc107; /* sedikit lebih terang saat hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #F4B400 #1F1F1F;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-scroll {
+  animation: scroll-left 60s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+
+
+/* === Responsive (Mobile) === */
+@media (max-width: 600px) {
+  #chat-box {
+    font-size: 0.9rem;
+  }
+
+  nav div {
+    font-size: 1rem !important;
+  }
+
+  button {
+    padding: 0.7rem 1rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 8px;
+  }
+
+  input {
+    font-size: 0.9rem !important;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+  }
+
+  nav {
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+}

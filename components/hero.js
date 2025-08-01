@@ -1,259 +1,169 @@
-import { askGemini } from '../func/askGemini.js';
 import { handleMSG1 } from '../func/handleExample.js';
 
-const chatHistory = [];
-
 export function renderHeroSection() {
-  const existingMain = document.querySelector('main');
-  if (existingMain) existingMain.remove();
+  const oldMain = document.querySelector('main');
+  if (oldMain) oldMain.remove();
 
-  document.body.style.margin = '0';
-  document.body.style.height = '100vh';
-  document.body.style.overflow = 'hidden';
-
-  const sidebar = document.querySelector('#sidebar');
-  const isCollapsed = sidebar?.classList.contains('collapsed');
-  const sidebarWidth = isCollapsed ? 60 : 75;
-
-  const navbar = document.querySelector('#topbar');
-  const navbarHeight = navbar?.offsetHeight || 60;
-
-  const hero = document.createElement('main');
-  hero.style.cssText = `
-    margin-top: ${navbarHeight}px;
-    margin-left: ${sidebarWidth}px;
-    width: calc(100vw - ${sidebarWidth}px);
-    height: calc(100vh - ${navbarHeight}px);
-    display: flex;
-    flex-direction: column;
-    background-color: #1F1F1F;
-    box-sizing: border-box;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
+  const main = document.createElement('main');
+  main.className = `
+    ml-[260px] min-h-screen bg-[#1F1F1F] text-white 
+    px-6 pt-[80px] flex flex-col items-center justify-start gap-4
   `;
 
-  const chatBox = document.createElement('div');
-  chatBox.id = 'chat-box';
-  chatBox.style.cssText = `
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    color: white;
-    font-size: 0.95rem;
-    background-color: #1F1F1F;
-    padding: 1rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  const introWrapper = document.createElement('div');
+  introWrapper.id = 'introWrapper';
+  introWrapper.className = 'flex flex-col items-center justify-center gap-4';
+
+  const logoImg = document.createElement('img');
+  logoImg.src = './assets/logo.webp';
+  logoImg.alt = 'LBXBT Logo';
+  logoImg.className = 'w-28 h-28 rounded-full object-cover shadow-lg';
+
+  const headline = document.createElement('h1');
+  headline.textContent = 'Welcome to LBXBT AI';
+  headline.className = 'text-4xl font-bold text-white text-center mt-4';
+
+  const subText = document.createElement('p');
+  subText.textContent = 'Your advanced BSC token analysis platform powered by AI';
+  subText.className = 'text-gray-400 text-center max-w-md';
+
+  introWrapper.appendChild(logoImg);
+  introWrapper.appendChild(headline);
+  introWrapper.appendChild(subText);
+
+  const chatWindow = document.createElement('div');
+  chatWindow.id = 'chatWindow';
+  chatWindow.className = `
+    flex flex-col w-full max-w-full px-6 py-6 space-y-4 mb-36 overflow-y-auto
   `;
-
-  const placeholder = document.createElement('div');
-  placeholder.className = 'placeholder';
-  placeholder.textContent = 'Welcome to Neuro Bean Assistant';
-  placeholder.style.cssText = `
-  color: #CD9800;
-  font-size: 2rem;
-  text-align: center;
-  margin-top: 1.5rem;
-  margin-bottom: 0.1rem;
-  pointer-events: none;
-`;
-
-const desc = document.createElement('div');
-  desc.className = 'desc';
-  desc.textContent = 'how can i help you today?';
-  desc.style.cssText = `
-  color:rgb(253, 253, 253);
-  font-size: 1rem;
-  text-align: center;
-  margin-top: 1.5rem;
-  margin-bottom: 3rem;
-  pointer-events: none;
-`;
-
-
-  const templateBox = document.createElement('div');
-  templateBox.className = 'template-box';
-  templateBox.style.cssText = `
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    padding: 1rem;
-    background-color: #1F1F1F;
-  `;
-
-  const templates = [
-    'Explain what the LilBean project is about',
-    'Who is ChatBean and what can it do?',
-    "Give me today's BTC market analysis",
-    'What is the roadmap for LilBean?',
-    'Tell me about the utility of LilBean',
-    'How does LilBean differ from other bots?'
-  ];
-
-  templates.forEach(temp => {
-    const btn = document.createElement('button');
-    btn.textContent = temp;
-    btn.style.cssText = `
-      padding: 0.75rem 1rem;
-      background-color: transparent;
-      border: 1px solid #CD9800;
-      border-radius: 0.5rem;
-      color: #CD9800;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
-      width: 100%;
-      text-align: center;
-    `;
-    btn.onclick = () => {
-      input.value = temp;
-      sendBtn.click();
-    };
-    templateBox.appendChild(btn);
-  });
+  chatWindow.style.maxHeight = 'calc(100vh - 180px)';
 
   const inputWrapper = document.createElement('div');
-  inputWrapper.style.cssText = `
-    width: 100%;
-    position: relative;
-    padding: 1rem;
-    background-color: #1F1F1F;
+  inputWrapper.className = `
+    fixed bottom-8 left-[260px] right-4 flex items-center gap-2 bg-[#121212]
+    border border-[#333] rounded-lg px-4 py-3 z-40 max-w-4xl mx-auto
   `;
 
   const input = document.createElement('textarea');
-  input.id = 'chat-input';
-  input.placeholder = 'Ask anything...';
-  input.style.cssText = `
-    width: 100%;
-    min-height: 3rem;
-    max-height: 12.5rem;
-    padding: 0.8rem 3rem 2.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: none;
-    outline: none;
-    resize: none;
-    overflow-y: auto;
-    background-color: #2B2B2B;
-    color: white;
+  input.rows = 1;
+  input.className = `
+    flex-1 resize-none overflow-hidden bg-transparent text-white placeholder-gray-500 text-sm focus:outline-none
   `;
+  input.placeholder = 'Ask LBXBT AI to analyze any BSC token...';
 
-  const sendBtn = document.createElement('button');
-  sendBtn.textContent = '➤';
-  sendBtn.style.cssText = `
-    position: absolute;
-    bottom: 1.8rem;
-    right: 1.6rem;
-    background-color: #F4B400;
-    color: black;
-    border: none;
-    padding: 0.5rem 0.8rem;
-    border-radius: 0.5rem;
-    font-weight: bold;
-    cursor: pointer;
-  `;
+  const maxHeight = 200;
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    const newHeight = Math.min(input.scrollHeight, maxHeight);
+    input.style.height = newHeight + 'px';
+    input.style.overflowY = (input.scrollHeight > maxHeight) ? 'auto' : 'hidden';
+  });
 
-sendBtn.onclick = async () => {
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.style.height = 'auto';
-
-  // Hapus template box jika masih ada
-  const templateBox = document.querySelector('.template-box');
-  if (templateBox) templateBox.remove();
-
-  // Hapus placeholder dan desc jika masih ada
-  const placeholder = document.querySelector('.placeholder');
-  if (placeholder) placeholder.remove();
-
-  const desc = document.querySelector('.desc');
-  if (desc) desc.remove();
-
-  addMessage('user', text);
-  chatHistory.push({ role: 'user', content: text });
-
-  const bubble = addMessage('bot', '⏳ NeuroBean is thinking...');
-  const response = await generateResponse();
-
-  chatHistory.push({ role: 'bot', content: response });
-  typeResponse(bubble, response, true);
-};
+  input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault(); // Hindari newline
+    submitBtn.click();  // Jalankan kirim
+  }
+});
 
 
+  const submitBtn = document.createElement('button');
+submitBtn.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 bg-yellow-400 rounded-full p-2 hover:bg-yellow-500 transition" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="10,8 16,12 10,16" fill="none" />
+  </svg>
+`;
+submitBtn.className = 'hover:scale-110 transition';
+
+
+  submitBtn.onclick = async () => {
+    const question = input.value.trim();
+    if (!question) return;
+
+    const intro = document.getElementById('introWrapper');
+    if (intro) intro.remove();
+
+    const userWrap = document.createElement('div');
+    userWrap.className = 'flex justify-end w-full';
+
+    const userBubble = document.createElement('div');
+    userBubble.className = `
+      bg-yellow-500 text-black text-sm px-4 py-2 rounded-xl max-w-[70%]
+    `;
+    userBubble.textContent = question;
+
+    userWrap.appendChild(userBubble);
+    chatWindow.appendChild(userWrap);
+    input.value = '';
+    input.style.height = 'auto';
+
+    setTimeout(() => {
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }, 100);
+
+    const aiLoadingWrap = document.createElement('div');
+    aiLoadingWrap.className = 'flex justify-start w-full';
+
+    const loadingBubble = document.createElement('div');
+    loadingBubble.className = `
+      bg-[#2A2A2A] text-gray-400 italic text-sm px-4 py-2 rounded-xl max-w-[70%]
+    `;
+    loadingBubble.innerHTML = `
+      <div class="flex items-center gap-2">
+        <img src="./assets/logo.webp" alt="LBXBT" class="w-6 h-6 rounded-full" />
+        <span>LBXBT is thinking...</span>
+      </div>
+    `;
+
+    aiLoadingWrap.appendChild(loadingBubble);
+    chatWindow.appendChild(aiLoadingWrap);
+
+    setTimeout(() => {
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }, 100);
+
+    const response = await handleMSG1(question);
+    aiLoadingWrap.remove();
+
+    const aiWrap = document.createElement('div');
+    aiWrap.className = 'flex justify-start w-full items-start gap-2';
+
+    const avatar = document.createElement('img');
+    avatar.src = './assets/logo.webp';
+    avatar.alt = 'LBXBT';
+    avatar.className = 'w-10 h-10 rounded-full mt-1';
+
+    const aiBubble = document.createElement('div');
+    aiBubble.className = `
+      bg-[#2A2A2A] text-yellow-400 text-sm px-4 py-2 rounded-xl max-w-[70%] whitespace-pre-wrap overflow-y-auto max-h-[300px]
+    `;
+    aiBubble.innerHTML = '';
+
+    aiWrap.appendChild(avatar);
+    aiWrap.appendChild(aiBubble);
+    chatWindow.appendChild(aiWrap);
+
+    let i = 0;
+    const typingInterval = setInterval(() => {
+      aiBubble.innerHTML += response[i];
+      i++;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      if (i >= response.length) clearInterval(typingInterval);
+    }, 5);
+  };
 
   inputWrapper.appendChild(input);
-  inputWrapper.appendChild(sendBtn);
+  inputWrapper.appendChild(submitBtn);
 
-  hero.appendChild(chatBox);
-  hero.appendChild(placeholder);
-  hero.appendChild(desc);
-  hero.appendChild(templateBox);
-  hero.appendChild(inputWrapper);
-  document.body.appendChild(hero);
-}
-
-// Helper functions remain unchanged
-function addMessage(sender, text, parseBold = false) {
-  const chatBox = document.getElementById('chat-box');
-  const placeholder = chatBox.querySelector('.placeholder');
-  if (placeholder) placeholder.remove();
-
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = `
-    display: flex;
-    justify-content: ${sender === 'user' ? 'flex-end' : 'flex-start'};
-    margin-bottom: 0.75rem;
+  const bottomInfo = document.createElement('div');
+  bottomInfo.className = `
+    fixed bottom-1 left-[260px] right-4 text-center text-gray-500 text-xs z-30
   `;
+  bottomInfo.textContent = 'LBXBT AI can analyze BSC tokens, provide market insights, and technical analysis.';
 
-  const bubble = document.createElement('div');
-  bubble.style.cssText = `
-    max-width: 80%;
-    padding: 0.7rem 1rem;
-    border-radius: 0.75rem;
-    background-color: ${sender === 'user' ? '#2B2B2B' : 'transparent'};
-    color: white;
-    line-height: 1.4;
-  `;
-
-  if (parseBold) {
-    bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  } else {
-    bubble.textContent = text;
-  }
-
-  wrapper.appendChild(bubble);
-  chatBox.appendChild(wrapper);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  return bubble;
-}
-
-async function generateResponse() {
-  try {
-    const lastMessage = chatHistory.slice(-1);
-    const context = lastMessage.map(msg => `${msg.role === 'user' ? 'You' : 'NeuroBean'}: ${msg.content}`).join('\n');
-    const reply = await handleMSG1(context);
-    return reply || "Sorry NeuroBean Error";
-  } catch (err) {
-    console.error("Gemini error:", err);
-    return "Error Call NeuroBean";
-  }
-}
-
-function typeResponse(element, text, parseBold = false, delay = 10) {
-  let i = 0;
-  let targetText = parseBold ? text.replace(/\*\*(.*?)\*\*/g, (_, p1) => `<strong>${p1}</strong>`) : text;
-  if (parseBold) element.innerHTML = ''; else element.textContent = '';
-
-  const interval = setInterval(() => {
-    if (parseBold) element.innerHTML = targetText.slice(0, i + 1);
-    else element.textContent += text.charAt(i);
-
-    i++;
-    if (i >= targetText.length) clearInterval(interval);
-  }, delay);
+  main.appendChild(introWrapper);
+  main.appendChild(chatWindow);
+  document.body.appendChild(main);
+  document.body.appendChild(inputWrapper);
+  document.body.appendChild(bottomInfo);
 }

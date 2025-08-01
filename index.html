@@ -3,14 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>NeuroBean - AI Powered by LilBean</title>
-  <link rel="icon" type="image/png" href="assets/logo.png"> <!-- Ganti dengan nama file logo kamu -->
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Tailwind CSS (for dev only) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
 </head>
-<body>
+<body class="bg-[#1F1F1F] text-white">
+
+  <!-- Main JS -->
   <script type="module" src="script.js"></script>
+
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  const tg = window.Telegram.WebApp;
-  tg.expand(); // membuat UI lebih besar
-</script>
+  
+  <script>
+    const tg = window.Telegram.WebApp;
+    // tg.expand(); // optional
+  </script>
+
 </body>
 </html>
