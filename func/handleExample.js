@@ -55,27 +55,35 @@ export async function handleMSG1(messageText) {
   const category = await detectCategory(processedText, mainCategories);
   let prompt = '';
 
-  switch (category) {
-    case 'ask about project':
-    case 'ask bot':
-      prompt = `Hey Gemini! 👋\nHere's some fun info about Bean project:\n${informationBean()}\nSomeone just asked: "${processedText}".\nPlease answer with clear and chill response (max 50 words). Thanks! 🌟`;
-      break;
-    case 'greeting':
-      prompt = `They greeted: "${processedText}". Reply with excited and cheerful greeting (max 20 words).`;
-      break;
-    case 'compliment':
-      prompt = `They complimented: "${processedText}". Reply with playful compliment back (max 20 words).`;
-      break;
-    case 'others':
-      prompt = `Give a fun, positive, and playful answer that explains this clearly to a general audience: ${processedText}. Keep it under 250 words. Do not repeat the question.`;
-      break;
+  // Dapatkan informasi proyek (pakai await kalau async)
+  const info = await informationBean();
+
+  // Buat prompt jika BUKAN permintaan analisis crypto
+  if (category !== 'analysis crypto') {
+    prompt = `You are a smart and friendly assistant named **LBXBT**. Based on the user's message, follow these instructions:
+
+1. If the user greets you (e.g. "Hi", "Hello"), respond with a cheerful and fun greeting (max 20 words).
+
+2. If the user compliments you, respond with appreciation and a playful tone (max 20 words).
+
+3. If the user asks about the LBXBT project or about yourself, use the following info:
+${info}
+Respond in a chill and informative tone (max 50 words).
+
+4. If the user asks for a crypto market analysis but does not mention a specific token or pair, ask them:  
+"Sure! Which market would you like me to analyze? (e.g. BTCUSDT)"
+
+5. For all other general questions, reply helpfully and clearly. Keep responses under 500 words, and match the tone of a helpful AI assistant with personality.
+
+Now here is the user's message:
+"${messageText}"`;
   }
 
   try {
-
     let responMessage = '';
+
     if (category === 'analysis crypto') {
-      const prompt = `
+      const extractSymbolPrompt = `
 Your task is to extract the cryptocurrency name from the following text and return its USDT trading pair symbol, following these rules:
 
 1. If the token is one of: pepe, shib, x, xec, floki, bonk, lunc, rats, sats → prefix the symbol with "1000"
@@ -92,20 +100,64 @@ Examples:
 Text: "${processedText}"
 
 Answer:
-  `.trim();
+`.trim();
 
-      const symbol = await askGemini(prompt);
-      responMessage = await getGeminiAnalysis(symbol)
+      const symbol = await askGemini(extractSymbolPrompt);
+
+      // Tambahan pengecekan kalau simbol tidak valid
+      if (!symbol || !symbol.includes('USDT')) {
+        return 'Sorry, I couldn’t detect the token name.';
+      }
+
+      responMessage = await getGeminiAnalysis(symbol);
     }
 
-    if (prompt)
+    // Jika bukan analysis, proses prompt biasa
+    if (prompt && category !== 'analysis crypto') {
       responMessage = await askGemini(prompt);
+    }
 
-
+    // Tambahkan bold untuk label seperti Entry, SL, dll.
     responMessage = boldifyLabels(responMessage);
-    return responMessage || '...';
+
+    return responMessage || "I'm not sure how to respond to that. Try asking something else?";
   } catch (e) {
     console.error('❌ Error generating response:', e.message);
     return 'Sorry, I couldn’t process that.';
+  }
+}
+
+
+export async function handleMessage0(messageText) {
+  try {
+    const analysa = await handleMSG1(messageText); // get analysis content
+    const prompt = `
+You are a smart and friendly assistant named **LBXBT**. Based on the user's message, follow these instructions:
+
+1. If the user greets you (e.g. "Hi", "Hello"), respond with a cheerful and fun greeting (max 20 words).
+
+2. If the user compliments you, respond with appreciation and a playful tone (max 20 words).
+
+3. If the user asks about the LBXBT project or about yourself, use the following info:\n${informationBean()}\nRespond in a chill and informative tone (max 50 words).
+
+4. If the user asks for a crypto market analysis but does not mention a specific token or pair, ask them:  
+"Sure! Which market would you like me to analyze? (e.g. BTCUSDT)"
+
+5. If the user requests a crypto market analysis and mentions a specific pair (e.g. BTCUSDT, ETHUSDT, etc.), respond using the following analysis content:\n${analysa}\nFormat your response in a chill, informative tone.  
+Start with a friendly intro like "Here's what I found for you 👇", then summarize the analysis clearly (max 250 words). Avoid repeating the token name unnecessarily.
+
+6. For all other general questions, reply helpfully and clearly. Keep responses under 500 words, and match the tone of a helpful AI assistant with personality.
+
+Now here is the user's message:
+"${messageText}"
+
+Respond accordingly by following the rules above.
+    `.trim();
+
+    const aiResponse = await askGemini(prompt);
+    return aiResponse;
+  } catch (error) {
+    console.error('handleMessage0 error:', error);
+    return "Oops... something went wrong while processing your message 😓";
   }
 }

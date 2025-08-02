@@ -1,12 +1,17 @@
-import { handleMSG1 } from '../func/handleExample.js';
+import { handleMSG1, handleMessage0 } from '../func/handleExample.js';
 
 export function renderHeroSection() {
+  const isMobile = window.innerWidth < 768;
+  const leftMargin = isMobile ? 'ml-6' : 'ml-[260px]';
+
+  const inputLeft = isMobile ? 'left-14' : 'left-[260px]';
+
   const oldMain = document.querySelector('main');
   if (oldMain) oldMain.remove();
 
   const main = document.createElement('main');
   main.className = `
-    ml-[260px] min-h-screen bg-[#1F1F1F] text-white 
+    ${leftMargin} min-h-screen bg-[#1F1F1F] text-white 
     px-6 pt-[80px] flex flex-col items-center justify-start gap-4
   `;
 
@@ -40,14 +45,15 @@ export function renderHeroSection() {
 
   const inputWrapper = document.createElement('div');
   inputWrapper.className = `
-    fixed bottom-8 left-[260px] right-4 flex items-center gap-2 bg-[#121212]
+    fixed bottom-8 ${inputLeft} right-4 flex items-center gap-2 bg-[#121212]
     border border-[#333] rounded-lg px-4 py-3 z-40 max-w-4xl mx-auto
   `;
 
   const input = document.createElement('textarea');
   input.rows = 1;
   input.className = `
-    flex-1 resize-none overflow-hidden bg-transparent text-white placeholder-gray-500 text-sm focus:outline-none
+    flex-1 resize-none overflow-hidden bg-transparent text-white 
+    placeholder-gray-500 text-sm focus:outline-none
   `;
   input.placeholder = 'Ask LBXBT AI to analyze any BSC token...';
 
@@ -60,21 +66,19 @@ export function renderHeroSection() {
   });
 
   input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault(); // Hindari newline
-    submitBtn.click();  // Jalankan kirim
-  }
-});
-
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitBtn.click();
+    }
+  });
 
   const submitBtn = document.createElement('button');
-submitBtn.innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 bg-yellow-400 rounded-full p-2 hover:bg-yellow-500 transition" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polygon points="10,8 16,12 10,16" fill="none" />
-  </svg>
-`;
-submitBtn.className = 'hover:scale-110 transition';
-
+  submitBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 bg-yellow-400 rounded-full p-2 hover:bg-yellow-500 transition" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="10,8 16,12 10,16" fill="none" />
+    </svg>
+  `;
+  submitBtn.className = 'hover:scale-110 transition';
 
   submitBtn.onclick = async () => {
     const question = input.value.trim();
@@ -157,7 +161,7 @@ submitBtn.className = 'hover:scale-110 transition';
 
   const bottomInfo = document.createElement('div');
   bottomInfo.className = `
-    fixed bottom-1 left-[260px] right-4 text-center text-gray-500 text-xs z-30
+    fixed bottom-1 ${inputLeft} right-4 text-center text-gray-500 text-xs z-30
   `;
   bottomInfo.textContent = 'LBXBT AI can analyze BSC tokens, provide market insights, and technical analysis.';
 
