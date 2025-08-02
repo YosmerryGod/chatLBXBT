@@ -9,14 +9,14 @@ export async function askGemini(prompt) {
     });
 
     if (!response.ok) {
-      console.warn(`⚠️ Gagal memanggil API Heroku. Status: ${response.status}`);
-      return '⚠️ Tidak bisa terhubung ke LBXBT AI backend.';
+      console.warn(`⚠️ Failed to contact LBXBT API. Status: ${response.status}`);
+      return '⚠️ Unable to connect to the LBXBT AI backend.';
     }
 
     const data = await response.json();
-    return data.result || '⚠️ Tidak ada hasil dari LBXBT AI.';
+    return data.result || '⚠️ No response returned from LBXBT AI.';
   } catch (error) {
-    console.error('❌ Error saat koneksi ke LBXBT backend:', error.message);
-    return '❌ LBXBT AI error. Silakan coba lagi nanti 😓';
+    console.error('❌ Error connecting to LBXBT backend:', error.message);
+    return '❌ An error occurred while connecting to LBXBT AI. Please try again later.';
   }
 }
