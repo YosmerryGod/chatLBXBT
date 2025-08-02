@@ -1,6 +1,11 @@
 export async function askGemini(prompt) {
   const API_KEYS = [
-   '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'
+    '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',
+    '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',
+    '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',
+    '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',
+    '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',
+    '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'
   ];
 
   const model = 'qwen/qwen3-30b-a3b-instruct-2507';
@@ -23,7 +28,7 @@ export async function askGemini(prompt) {
 
       if (!res.ok) {
         console.warn(`⚠️ Key ${key.slice(-6)} gagal. Status: ${res.status}`);
-        continue; // langsung lanjut ke API key berikutnya tanpa retry
+        continue;
       }
 
       const data = await res.json();
