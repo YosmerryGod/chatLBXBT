@@ -43,6 +43,62 @@ export function renderHeroSection() {
   `;
   chatWindow.style.maxHeight = 'calc(100vh - 180px)';
 
+  // Tambahkan welcome message dari AI
+  const showWelcomeMessage = () => {
+    const welcomeText = `Hello! 👋
+
+I am LBXBT AI, your professional BSC token analysis assistant.
+
+🔍 **My Capabilities:**
+• Advanced market analysis and insights
+• Real-time token performance tracking
+• Technical analysis and trend predictions
+• Risk assessment and due diligence
+
+🚀 **Latest Update:**
+We've just launched our official token on four.meme!
+
+**Contract Address:**
+0xcb4c7c13693928ef2d9f22610d8e0f12f3154444
+
+**Official Link:**
+https://four.meme/token/0xcb4c7c13693928ef2d9f22610d8e0f12f3154444
+
+How can I assist you with your BSC token analysis today?`;
+
+    const aiWrap = document.createElement('div');
+    aiWrap.className = 'flex justify-start w-full items-start gap-2';
+
+    const avatar = document.createElement('img');
+    avatar.src = './assets/logo.webp';
+    avatar.alt = 'LBXBT';
+    avatar.className = 'w-10 h-10 rounded-full mt-1';
+
+    const aiBubble = document.createElement('div');
+    aiBubble.className = `
+      bg-[#2A2A2A] text-yellow-400 text-sm px-4 py-2 rounded-xl max-w-[70%] whitespace-pre-wrap overflow-y-auto max-h-[400px]
+    `;
+    aiBubble.innerHTML = '';
+
+    aiWrap.appendChild(avatar);
+    aiWrap.appendChild(aiBubble);
+    chatWindow.appendChild(aiWrap);
+
+    // Typing effect untuk welcome message
+    let i = 0;
+    const typingInterval = setInterval(() => {
+      aiBubble.innerHTML += welcomeText[i];
+      i++;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      if (i >= welcomeText.length) clearInterval(typingInterval);
+    }, 10);
+  };
+
+  // Tampilkan welcome message setelah 500ms
+  setTimeout(() => {
+    showWelcomeMessage();
+  }, 500);
+
   const inputWrapper = document.createElement('div');
   inputWrapper.className = `
     fixed bottom-8 ${inputLeft} right-4 flex items-center gap-2 bg-[#121212]
@@ -171,3 +227,4 @@ export function renderHeroSection() {
   document.body.appendChild(inputWrapper);
   document.body.appendChild(bottomInfo);
 }
+
